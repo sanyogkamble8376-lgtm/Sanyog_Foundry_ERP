@@ -1,0 +1,9 @@
+﻿{% extends "base.html" %}{% block content %}
+<div class="page-head"><div><div class="crumb">{{department}}</div><h1>{{item}}</h1><p>Manage {{item.lower()}} records and workflow.</p></div><button class="primary-btn">+ Add New</button></div>
+<div class="panel"><div class="panel-head"><b>{{item}} Workspace</b><span class="badge-soft">Ready</span></div>
+<div class="empty big"><i class="bi bi-box-seam"></i><h4>{{item}} module</h4><p>This module is connected to the ERP shell. Forms, approval workflow, reports and database CRUD can be added here.</p>
+<form method="post" action="{{url_for('activity')}}"><input type="hidden" name="module" value="{{department}} / {{item}}"><input type="hidden" name="action" value="Module Entry"><input name="description" class="form-control mb-3" placeholder="Test activity description"><button class="primary-btn">Save Test Activity</button></form></div></div>
+{% endblock %}
+
+
+

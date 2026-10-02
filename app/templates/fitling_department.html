@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ module_name }} - sapre ERP</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .sidebar { width: 260px; height: 100vh; background: #1e293b; position: fixed; top: 0; left: 0; color: #fff; padding-top: 20px; z-index: 100; }
+        .sidebar a { padding: 12px 20px; text-decoration: none; font-size: 15px; color: #cbd5e1; display: block; transition: 0.3s; }
+        .sidebar a:hover, .sidebar a.active { background: #3b82f6; color: #fff; border-radius: 4px; margin: 0 10px; }
+        .main-content { margin-left: 260px; padding: 30px; }
+        .card { border: none; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <h3 class="text-center text-white mb-4"><i class="fas fa-industry"></i> Sanyog ERP</h3>
+        <a href="{{ url_for('dashboard') }}"><i class="fas fa-home me-2"></i> Dashboard</a>
+        <a href="{{ url_for('global_po_tracker') }}"><i class="fas fa-shopping-cart me-2"></i> Global PO Tracker</a>
+        <a href="{{ url_for('fitling_module', item='job-receiving') }}" class="active"><i class="fas fa-tools me-2"></i> Fitling Department</a>
+        <a href="{{ url_for('logout') }}" class="text-danger mt-5"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-tools text-primary me-2"></i> {{ module_name }}</h2>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRecordModal">
+                    <i class="fas fa-plus me-1"></i> Add New Fitling Entry
+                </button>
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Data Table Card -->
+            <div class="card p-3">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Job No</th>
+                                <th>Customer</th>
+                                <th>Part Name</th>
+                                <th>Heat No</th>
+                                <th>Received Qty</th>
+                                <th>Completed Qty</th>
+                                <th>Rework Qty</th>
+                                <th>Pending Qty</th>
+                                <th>Status</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if entries %}
+                                {% for row in entries %}
+                                <tr>
+                                    <td>{{ row.job_card_no }}</td>
+                                    <td>{{ row.customer_name if row.customer_name else 'N/A' }}</td>
+                                    <td>{{ row.casting_name }}</td>
+                                    <td>{{ row.heat_no }}</td>
+                                    <td>{{ row.received_qty }}</td>
+                                    <td>{{ row.completed_qty }}</td>
+                                    <td>{{ row.rework_qty }}</td>
+                                    <td>{{ row.received_qty - (row.completed_qty + row.rework_qty) }}</td>
+                                    <td><span class="badge bg-success">{{ row.operation_stage }}</span></td>
+                                    <td>{{ row.remarks }}</td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="10" class="text-center text-muted py-4">No records found for Fitling Department.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Adding Entry -->
+    <div class="modal fade" id="addRecordModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form action="{{ url_for('save_fitling_record', item='job-receiving') }}" method="POST">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title"><i class="fas fa-plus-circle me-1"></i> Add Fitling Department Entry</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Job Card No.</label>
+                                <input type="text" class="form-control" name="job_card_no" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Casting / Part Name</label>
+                                <input type="text" class="form-control" name="casting_name" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Heat No.</label>
+                                <input type="text" class="form-control" name="heat_no" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Received Qty</label>
+                                <input type="number" step="any" class="form-control" name="received_qty" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Completed Qty</label>
+                                <input type="number" step="any" class="form-control" name="completed_qty" value="0">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Rework Qty</label>
+                                <input type="number" step="any" class="form-control" name="rework_qty" value="0">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Operation / Stage</label>
+                                <select class="form-select" name="operation_stage">
+                                    <option value="Fettling & Grinding">Fettling & Grinding</option>
+                                    <option value="Shot Blasting">Shot Blasting</option>
+                                    <option value="Assembly">Assembly</option>
+                                    <option value="Inspection Ready">Inspection Ready</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Remarks</label>
+                                <input type="text" class="form-control" name="remarks">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Save Record</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

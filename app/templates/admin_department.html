@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ module_name }} - Sanyog ERP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .sidebar { width: 260px; height: 100vh; background: #1e293b; position: fixed; top: 0; left: 0; color: #fff; padding-top: 20px; z-index: 100; overflow-y: auto; }
+        .sidebar a { padding: 10px 20px; text-decoration: none; font-size: 14px; color: #cbd5e1; display: block; transition: 0.3s; }
+        .sidebar a:hover, .sidebar a.active { background: #3b82f6; color: #fff; border-radius: 4px; margin: 0 10px; }
+        .main-content { margin-left: 260px; padding: 30px; }
+        .card { border: none; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h3 class="text-center text-white mb-4"><i class="fas fa-industry"></i> Sanyog ERP</h3>
+        <a href="{{ url_for('dashboard') }}"><i class="fas fa-home me-2"></i> Dashboard</a>
+        <a href="{{ url_for('global_po_tracker') }}"><i class="fas fa-shopping-cart me-2"></i> Global PO Tracker</a>
+        <a href="{{ url_for('department_module', dept_name='fitling', item='main') }}"><i class="fas fa-tools me-2"></i> Fitling</a>
+        <a href="{{ url_for('department_module', dept_name='production', item='main') }}"><i class="fas fa-cogs me-2"></i> Production</a>
+        <a href="{{ url_for('department_module', dept_name='quality', item='main') }}"><i class="fas fa-check-circle me-2"></i> Quality</a>
+        <a href="{{ url_for('department_module', dept_name='maintenance', item='main') }}"><i class="fas fa-wrench me-2"></i> Maintenance</a>
+        <a href="{{ url_for('department_module', dept_name='dispatch', item='main') }}"><i class="fas fa-truck me-2"></i> Dispatch</a>
+        <a href="{{ url_for('department_module', dept_name='accounts', item='main') }}"><i class="fas fa-calculator me-2"></i> Accounts</a>
+        <a href="{{ url_for('department_module', dept_name='development', item='main') }}"><i class="fas fa-drafting-compass me-2"></i> Development</a>
+        <a href="{{ url_for('department_module', dept_name='store', item='main') }}"><i class="fas fa-warehouse me-2"></i> Store</a>
+        <a href="{{ url_for('department_module', dept_name='purchase', item='main') }}"><i class="fas fa-shopping-bag me-2"></i> Purchase</a>
+        <a href="{{ url_for('department_module', dept_name='sales', item='main') }}"><i class="fas fa-chart-line me-2"></i> Sales</a>
+        <a href="{{ url_for('department_module', dept_name='lab', item='main') }}"><i class="fas fa-flask me-2"></i> LAB</a>
+        <a href="{{ url_for('department_module', dept_name='core', item='main') }}"><i class="fas fa-cube me-2"></i> Core</a>
+        <a href="{{ url_for('admin_module') }}" class="active"><i class="fas fa-user-shield me-2"></i> Admin Control</a>
+        <a href="{{ url_for('logout') }}" class="text-danger mt-3 mb-4"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+    </div>
+
+    <div class="main-content">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-user-shield text-primary me-2"></i> {{ module_name }}</h2>
+            </div>
+
+            <div class="card p-3">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>User ID</th>
+                                <th>Username</th>
+                                <th>Role / Department</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if entries %}
+                                {% for row in entries %}
+                                <tr>
+                                    <td>{{ row.id }}</td>
+                                    <td>{{ row.username }}</td>
+                                    <td>{{ row.role }}</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-4">No user records found.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ module_name }} - Sanyog ERP</title>
+    <!-- Bootstrap CSS for Clean UI -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .sidebar { min-height: 100vh; background-color: #1e293b; color: #fff; position: fixed; width: 250px; top: 0; left: 0; }
+        .sidebar a { color: #cbd5e1; text-decoration: none; display: block; padding: 10px 20px; transition: 0.2s; }
+        .sidebar a:hover, .sidebar a.active { background-color: #334155; color: #fff; }
+        .main-content { margin-left: 250px; padding: 20px; }
+        .sub-module-bar { background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; overflow-x: auto; white-space: nowrap; }
+        .sub-module-btn { margin-right: 5px; }
+        .report-box { background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar p-3">
+        <h4 class="text-white mb-4"><i class="fas fa-industry"></i> Sanyog ERP</h4>
+        <a href="/"><i class="fas fa-home me-2"></i> Dashboard</a>
+        <a href="/global-po-tracker"><i class="fas fa-globe me-2"></i> Global PO Tracker</a>
+        <hr class="text-secondary">
+        <small class="text-uppercase text-muted px-3">Departments</small>
+        <a href="/department/fitling/Fitling-Dashboard"><i class="fas fa-tools me-2"></i> Fitling</a>
+        <a href="/department/production/Production-Dashboard"><i class="fas fa-cogs me-2"></i> Production</a>
+        <a href="/department/quality/Quality-Dashboard"><i class="fas fa-check-circle me-2"></i> Quality</a>
+        <a href="/department/maintenance/Maintenance-Dashboard"><i class="fas fa-wrench me-2"></i> Maintenance</a>
+        <a href="/department/dispatch/Dispatch-Dashboard"><i class="fas fa-truck me-2"></i> Dispatch</a>
+        <a href="/department/store/Store-Dashboard"><i class="fas fa-warehouse me-2"></i> Store</a>
+        <a href="/department/purchase/Purchase-Dashboard"><i class="fas fa-shopping-cart me-2"></i> Purchase</a>
+        <a href="/department/sales/Sales-Dashboard"><i class="fas fa-chart-line me-2"></i> Sales</a>
+        <a href="/department/accounts/Accounts-Dashboard"><i class="fas fa-calculator me-2"></i> Accounts</a>
+        <a href="/department/lab/Lab-Dashboard"><i class="fas fa-flask me-2"></i> Lab</a>
+        <a href="/department/development/Development-Dashboard"><i class="fas fa-code me-2"></i> Development</a>
+        <a href="/department/core/Core-Dashboard"><i class="fas fa-cube me-2"></i> Core</a>
+        <hr class="text-secondary">
+        <a href="/logout" class="text-danger"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-folder-open text-primary me-2"></i> {{ module_name }}</h2>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRecordModal">
+                <i class="fas fa-plus me-1"></i> Add New Record
+            </button>
+        </div>
+
+        <!-- Flash Messages (Fixed) -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Sub-Modules Horizontal Navigation Bar -->
+        <div class="sub-module-bar">
+            <strong><i class="fas fa-bars me-2"></i> Sub-Modules:</strong>
+            {% for sub in sub_modules %}
+                {% set safe_sub = sub.replace('/', '-') %}
+                <a href="{{ url_for('department_module', dept_name=dept_slug, item=safe_sub) }}" 
+                   class="btn btn-sm {% if current_item == sub %}btn-dark{% else %}btn-outline-secondary{% endif %} sub-module-btn">
+                   {{ sub }}
+                </a>
+            {% endfor %}
+        </div>
+
+        <!-- Report Generation & Format Selection Section -->
+        <div class="report-box">
+            <form method="GET" class="row g-3 align-items-center">
+                <div class="col-auto">
+                    <label class="col-form-label fw-bold"><i class="fas fa-calendar-alt me-1"></i> Date Filter:</label>
+                </div>
+                <div class="col-auto">
+                    <input type="date" name="start_date" value="{{ start_date }}" class="form-control form-control-sm">
+                </div>
+                <div class="col-auto">
+                    <label class="col-form-label">To:</label>
+                </div>
+                <div class="col-auto">
+                    <input type="date" name="end_date" value="{{ end_date }}" class="form-control form-control-sm">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-sm btn-success"><i class="fas fa-filter me-1"></i> Generate Report</button>
+                    <a href="{{ url_for('department_module', dept_name=dept_slug, item=current_item.replace('/', '-')) }}" class="btn btn-sm btn-outline-secondary">Reset</a>
+                </div>
+                
+                <!-- Download Report Dropdown (PDF, Excel, CSV) -->
+                <div class="col-auto ms-auto">
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-download me-1"></i> Download Report As...
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('department_module', dept_name=dept_slug, item=current_item.replace('/', '-'), start_date=start_date, end_date=end_date, export='pdf') }}"><i class="fas fa-file-pdf text-danger me-2"></i> PDF Format</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('department_module', dept_name=dept_slug, item=current_item.replace('/', '-'), start_date=start_date, end_date=end_date, export='excel') }}"><i class="fas fa-file-excel text-success me-2"></i> Excel Format</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('department_module', dept_name=dept_slug, item=current_item.replace('/', '-'), start_date=start_date, end_date=end_date, export='csv') }}"><i class="fas fa-file-csv text-info me-2"></i> CSV Format</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Data Table Section -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 text-secondary">Current Sub-Module: <strong>{{ current_item }}</strong></h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0 align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Record / Particulars</th>
+                                <th>Ref / Ticket No</th>
+                                <th>Date</th>
+                                <th>Rate</th>
+                                <th>Quantity</th>
+                                <th>Details</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if entries %}
+                                {% for row in entries %}
+                                <tr>
+                                    <td>{{ row['id'] }}</td>
+                                    <td class="fw-bold">{{ row['record_name'] }}</td>
+                                    <td>{{ row['reference_no'] }}</td>
+                                    <td>{{ row['date_val'] }}</td>
+                                    <td>{{ row['rate'] }}</td>
+                                    <td>{{ row['quantity'] }}</td>
+                                    <td>{{ row['details'] }}</td>
+                                    <td><span class="badge bg-success">{{ row['status'] }}</span></td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="8" class="text-center py-4 text-muted">
+                                        No records found for {{ current_item }}. Click 'Add New Record' to insert data.
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Record Modal -->
+    <div class="modal fade" id="addRecordModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Record to {{ current_item }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="sub_module_selected" value="{{ current_item }}">
+                        <div class="mb-3">
+                            <label class="form-label">Record / Particulars Name *</label>
+                            <input type="text" name="record_name" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Reference / Ticket No</label>
+                            <input type="text" name="reference_no" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Date</label>
+                            <input type="date" name="date_val" class="form-control">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Rate</label>
+                                <input type="number" step="any" name="rate" class="form-control">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Quantity</label>
+                                <input type="text" name="quantity" class="form-control">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Details / Remarks</label>
+                            <textarea name="details" class="form-control" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save Record</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

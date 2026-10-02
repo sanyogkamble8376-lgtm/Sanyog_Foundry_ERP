@@ -1,0 +1,61 @@
+﻿{% extends "base.html" %}{% block content %}
+<div class="page-head">
+  <div><div class="crumb">Production</div><h1>Job Cards</h1><p>Create production job cards from approved production plans and track execution status.</p></div>
+  <button class="primary-btn" data-bs-toggle="modal" data-bs-target="#jobModal" onclick="resetJobForm()">+ New Job Card</button>
+</div>
+
+<div class="panel mb-4">
+  <div class="panel-head"><b>Job Card Register</b><span class="badge-soft">{{ cards|length }} records</span></div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0" style="font-size:12px">
+      <thead><tr><th>Job No</th><th>Production Plan</th><th>Part</th><th>Customer</th><th>Qty</th><th>Process</th><th>Target</th><th>Priority</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+      <tbody>
+      {% for c in cards %}<tr>
+        <td><b>{{ c.job_no }}</b><div class="text-muted" style="font-size:10px">{{ c.created_at }}</div></td>
+        <td>{{ c.plan_no or '-' }}</td>
+        <td><b>{{ c.part_no }}</b><div class="text-muted" style="font-size:10px">{{ c.part_name }}</div></td>
+        <td>{{ c.customer or '-' }}</td><td><b>{{ '%.0f'|format(c.job_qty or 0) }}</b></td><td>{{ c.process or '-' }}</td><td>{{ c.target_date or '-' }}</td>
+        <td><span class="badge bg-light text-dark">{{ c.priority }}</span></td>
+        <td><span class="status-badge status-{{ c.status|lower }}">{{ c.status }}</span></td>
+        <td class="text-end">
+          <button class="btn btn-sm btn-light" onclick='editJob({{ c|tojson }})'>Edit</button>
+          {% if c.status == 'Draft' %}<form method="post" action="{{ url_for('job_card_status',job_id=c.id,status='Submitted') }}" class="d-inline"><button class="btn btn-sm btn-outline-primary">Submit</button></form>{% endif %}
+          {% if c.status == 'Submitted' and session.get('role') in ['Admin','Manager'] %}<form method="post" action="{{ url_for('job_card_status',job_id=c.id,status='Approved') }}" class="d-inline"><button class="btn btn-sm btn-outline-success">Approve</button></form>{% endif %}
+          {% if c.status == 'Approved' and session.get('role') in ['Admin','Manager'] %}<form method="post" action="{{ url_for('job_card_status',job_id=c.id,status='Released') }}" class="d-inline"><button class="btn btn-sm btn-outline-primary">Release</button></form>{% endif %}
+          {% if c.status == 'Released' %}<form method="post" action="{{ url_for('job_card_status',job_id=c.id,status='Completed') }}" class="d-inline"><button class="btn btn-sm btn-outline-success">Complete</button></form>{% endif %}
+          {% if c.status not in ['Completed','Cancelled'] and session.get('role') in ['Admin','Manager'] %}<form method="post" action="{{ url_for('job_card_status',job_id=c.id,status='Cancelled') }}" class="d-inline"><button class="btn btn-sm btn-outline-danger">Cancel</button></form>{% endif %}
+          {% if session.get('role') in ['Admin','Manager'] %}<form method="post" action="{{ url_for('delete_job_card',job_id=c.id) }}" class="d-inline" onsubmit="return confirm('Delete this Job Card?')"><button class="btn btn-sm btn-outline-danger">Delete</button></form>{% endif %}
+        </td>
+      </tr>{% else %}<tr><td colspan="10" class="text-center text-muted py-5">No Job Cards yet. Approve a Production Plan first, then create a Job Card.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal fade" id="jobModal" tabindex="-1"><div class="modal-dialog modal-xl modal-dialog-centered"><div class="modal-content border-0 shadow">
+<form method="post" action="{{ url_for('save_job_card') }}">
+<div class="modal-header"><div><h5 class="modal-title" id="jobTitle">New Job Card</h5><small class="text-muted">Production execution document</small></div><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+<div class="modal-body"><input type="hidden" name="id" id="job_id">
+<div class="row g-3">
+<div class="col-md-5"><label class="form-label">Approved Production Plan</label><select class="form-select" name="plan_id" id="plan_id" onchange="loadPlan(this)"><option value="">-- Manual Job Card --</option>{% for p in plans %}<option value="{{ p.id }}" data-partno="{{ p.part_no }}" data-partname="{{ p.part_name }}" data-customer="{{ p.customer or '' }}" data-qty="{{ p.planned_qty }}" data-date="{{ p.target_date or '' }}" data-priority="{{ p.priority }}">{{ p.plan_no }} â€” {{ p.part_no }} / {{ p.part_name }} ({{ p.planned_qty|int }})</option>{% endfor %}</select><div class="form-text">Only Approved Production Plans are shown.</div></div>
+<div class="col-md-3"><label class="form-label">Part No *</label><input class="form-control" name="part_no" id="job_part_no" required></div>
+<div class="col-md-4"><label class="form-label">Part Name *</label><input class="form-control" name="part_name" id="job_part_name" required></div>
+<div class="col-md-4"><label class="form-label">Customer</label><input class="form-control" name="customer" id="job_customer"></div>
+<div class="col-md-3"><label class="form-label">Job Qty *</label><input type="number" min="0.01" step="0.01" class="form-control" name="job_qty" id="job_qty" required></div>
+<div class="col-md-5"><label class="form-label">Process / Operation</label><input class="form-control" name="process" id="job_process" placeholder="Moulding / Melting / Pouring / Casting"></div>
+<div class="col-md-3"><label class="form-label">Target Date</label><input type="date" class="form-control" name="target_date" id="job_target_date"></div>
+<div class="col-md-3"><label class="form-label">Priority</label><select class="form-select" name="priority" id="job_priority"><option>Normal</option><option>High</option><option>Urgent</option></select></div>
+<div class="col-12"><label class="form-label">Remarks / Instructions</label><textarea class="form-control" name="remarks" id="job_remarks" rows="3"></textarea></div>
+</div></div>
+<div class="modal-footer"><button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="primary-btn" type="submit">Save Job Card</button></div>
+</form></div></div></div>
+<style>.status-badge{padding:5px 9px;border-radius:20px;font-size:10px;font-weight:600}.status-draft{background:#f1f5f9;color:#475569}.status-submitted{background:#eff6ff;color:#2563eb}.status-approved{background:#ecfdf5;color:#15803d}.status-released{background:#eef2ff;color:#4338ca}.status-completed{background:#ecfdf5;color:#047857}.status-cancelled,.status-rejected{background:#fef2f2;color:#dc2626}.table th{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid #e7ebf2}.table td{border-color:#eef1f5}</style>
+<script>
+function resetJobForm(){document.getElementById('jobTitle').innerText='New Job Card';['job_id','job_part_no','job_part_name','job_customer','job_qty','job_process','job_target_date','job_remarks'].forEach(id=>document.getElementById(id).value='');document.getElementById('plan_id').value='';document.getElementById('job_priority').value='Normal';}
+function loadPlan(sel){const o=sel.options[sel.selectedIndex];if(!o.value)return;document.getElementById('job_part_no').value=o.dataset.partno||'';document.getElementById('job_part_name').value=o.dataset.partname||'';document.getElementById('job_customer').value=o.dataset.customer||'';document.getElementById('job_qty').value=o.dataset.qty||'';document.getElementById('job_target_date').value=o.dataset.date||'';document.getElementById('job_priority').value=o.dataset.priority||'Normal';}
+function editJob(c){document.getElementById('jobTitle').innerText='Edit Job Card - '+c.job_no;document.getElementById('job_id').value=c.id;document.getElementById('plan_id').value=c.plan_id||'';document.getElementById('job_part_no').value=c.part_no;document.getElementById('job_part_name').value=c.part_name;document.getElementById('job_customer').value=c.customer||'';document.getElementById('job_qty').value=c.job_qty||0;document.getElementById('job_process').value=c.process||'';document.getElementById('job_target_date').value=c.target_date||'';document.getElementById('job_priority').value=c.priority||'Normal';document.getElementById('job_remarks').value=c.remarks||'';bootstrap.Modal.getOrCreateInstance(document.getElementById('jobModal')).show();}
+</script>
+{% endblock %}
+
+
+

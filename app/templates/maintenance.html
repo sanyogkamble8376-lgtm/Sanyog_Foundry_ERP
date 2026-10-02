@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ module_name }} - Sanyog ERP</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .sidebar { width: 260px; height: 100vh; background: #1e293b; position: fixed; top: 0; left: 0; color: #fff; padding-top: 20px; z-index: 100; }
+        .sidebar a { padding: 12px 20px; text-decoration: none; font-size: 15px; color: #cbd5e1; display: block; transition: 0.3s; }
+        .sidebar a:hover, .sidebar a.active { background: #3b82f6; color: #fff; border-radius: 4px; margin: 0 10px; }
+        .main-content { margin-left: 260px; padding: 30px; }
+        .card { border: none; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <h3 class="text-center text-white mb-4"><i class="fas fa-industry"></i> Sanyog ERP</h3>
+        <a href="{{ url_for('dashboard') }}"><i class="fas fa-home me-2"></i> Dashboard</a>
+        <a href="{{ url_for('global_po_tracker') }}"><i class="fas fa-shopping-cart me-2"></i> Global PO Tracker</a>
+        <a href="{{ url_for('maintenance_module', item='main') }}" class="active"><i class="fas fa-wrench me-2"></i> Maintenance</a>
+        <a href="{{ url_for('logout') }}" class="text-danger mt-5"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-wrench text-primary me-2"></i> {{ module_name }}</h2>
+            </div>
+
+            <!-- Data Table Card -->
+            <div class="card p-3">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Job ID</th>
+                                <th>Machine / Equipment Name</th>
+                                <th>Breakdown / Service Type</th>
+                                <th>Assigned Technician</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">Machine breakdown and preventive maintenance logs active.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

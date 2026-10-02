@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Department - Sanyog Software ERP</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .sidebar { min-height: 100vh; background-color: #1e293b; color: #fff; }
+        .sidebar a { color: #cbd5e1; text-decoration: none; padding: 10px 15px; display: block; border-radius: 5px; margin-bottom: 5px; }
+        .sidebar a:hover, .sidebar a.active { background-color: #3b82f6; color: #fff; }
+        .card { border: none; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2 sidebar p-3">
+            <h4 class="text-white mb-4"><i class="fas fa-industry me-2"></i>Sanyog ERP</h4>
+            <a href="{{ url_for('dashboard') }}"><i class="fas fa-home me-2"></i> Dashboard</a>
+            <hr class="text-secondary">
+            <small class="text-uppercase text-muted fw-bold">Sales Modules</small>
+            <div class="mt-2">
+                <a href="{{ url_for('sales_module', item='Customer-Master') }}" class="{% if module_name == 'Customer Master' %}active{% endif %}"><i class="fas fa-users me-2"></i> Customer Master</a>
+                <a href="{{ url_for('sales_module', item='Customer-Enquiry') }}" class="{% if module_name == 'Customer Enquiry' %}active{% endif %}"><i class="fas fa-question-circle me-2"></i> Customer Enquiry</a>
+                <a href="{{ url_for('sales_module', item='Quotation') }}" class="{% if module_name == 'Quotation' %}active{% endif %}"><i class="fas fa-file-invoice-dollar me-2"></i> Quotation</a>
+                <a href="{{ url_for('sales_module', item='Sales-Order') }}" class="{% if module_name == 'Sales Order' %}active{% endif %}"><i class="fas fa-shopping-cart me-2"></i> Sales Order</a>
+                <a href="{{ url_for('sales_module', item='Customer-Follow-up') }}" class="{% if module_name == 'Customer Follow-Up' %}active{% endif %}"><i class="fas fa-headset me-2"></i> Follow-up</a>
+                <a href="{{ url_for('sales_module', item='Sales-Reports') }}" class="{% if module_name == 'Sales Reports' %}active{% endif %}"><i class="fas fa-chart-bar me-2"></i> Sales Reports</a>
+            </div>
+            <hr class="text-secondary mt-4">
+            <a href="{{ url_for('logout') }}" class="text-danger"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-10 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Sales Department &gt; <span class="text-primary">{{ module_name }}</span></h2>
+                <span class="badge bg-secondary p-2">Logged in as: {{ session.name }}</span>
+            </div>
+
+            <!-- Flash Messages -->
+            with messages = get_flashed_messages(with_categories=true)
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Input Form Card -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-plus-circle me-2"></i> Add New {{ module_name }} Entry
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-bold">Customer Company Name *</label>
+                                <input type="text" class="form-control" name="customer_name" required placeholder="e.g. Tata Motors / Kirloskar">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Contact Person Name</label>
+                                <input type="text" class="form-control" name="contact_person" placeholder="e.g. Mr. Patil">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Phone Number</label>
+                                <input type="text" class="form-control" name="phone" placeholder="Contact number">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Email ID</label>
+                                <input type="email" class="form-control" name="email" placeholder="customer@company.com">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">GST Number</label>
+                                <input type="text" class="form-control" name="gst_no" placeholder="27AAAAA0000A1Z5">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Casting / Product Name</label>
+                                <input type="text" class="form-control" name="product_casting_name" placeholder="e.g. Grade FG260 Housing">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Quantity (Pcs)</label>
+                                <input type="number" step="any" class="form-control" name="quantity" placeholder="0">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Unit Rate (₹)</label>
+                                <input type="number" step="any" class="form-control" name="unit_rate" placeholder="0.00">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Required Delivery Date</label>
+                                <input type="date" class="form-control" name="delivery_date">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Specifications / Requirements</label>
+                                <input type="text" class="form-control" name="specifications" placeholder="Material grade, weight, testing">
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Remarks / Follow-up notes</label>
+                                <textarea class="form-control" name="remarks" rows="2" placeholder="Any special notes..."></textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success"><i class="fas fa-save me-2"></i> Save Entry</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Data Table Card -->
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <i class="fas fa-list me-2"></i> Existing Records for {{ module_name }}
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Customer Name</th>
+                                    <th>Product / Casting</th>
+                                    <th>Qty</th>
+                                    <th>Rate (₹)</th>
+                                    <th>Total (₹)</th>
+                                    <th>Delivery Date</th>
+                                    <th>Status</th>
+                                    <th>Created By & Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if entries %}
+                                    {% for row in entries %}
+                                    <tr>
+                                        <td>#{{ row.id }}</td>
+                                        <td><strong>{{ row.customer_name }}</strong><br><small class="text-muted">{{ row.phone }}</small></td>
+                                        <td>{{ row.product_casting_name }}<br><small class="text-muted">{{ row.specifications }}</small></td>
+                                        <td>{{ row.quantity }}</td>
+                                        <td>{{ row.unit_rate }}</td>
+                                        <td><strong>{{ row.total_amount }}</strong></td>
+                                        <td>{{ row.delivery_date }}</td>
+                                        <td><span class="badge bg-warning text-dark">{{ row.status }}</span></td>
+                                        <td><small>{{ row.created_by }}<br>{{ row.created_at }}</small></td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="9" class="text-center text-muted">No records found for {{ module_name }}.</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap 5 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

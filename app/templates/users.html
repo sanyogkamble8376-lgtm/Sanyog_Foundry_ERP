@@ -1,0 +1,9 @@
+﻿{% extends "base.html" %}{% block content %}
+<div class="page-head"><div><h1>Users & Authority</h1><p>Role-based access control for the ERP.</p></div></div>
+<div class="grid2"><div class="panel"><div class="panel-head"><b>Create User</b></div><form class="formgrid" method="post" action="{{url_for('add_user')}}"><input name="full_name" placeholder="Full name" required><input name="username" placeholder="Username" required><input name="password" placeholder="Password" required><select name="role">{% for r in roles %}<option>{{r}}</option>{% endfor %}</select><select name="department">{% for d in departments %}<option>{{d}}</option>{% endfor %}</select><button class="primary-btn">Create User</button></form></div>
+<div class="panel"><div class="panel-head"><b>Permission Matrix</b></div>{% for r in roles %}<div class="perm"><b>{{r}}</b><span>{{ {'Admin':'All permissions','Manager':'View/Add/Edit/Approve/Reject/Export','Engineer':'View/Add/Edit/Submit/Export','Supervisor':'View/Add/Edit/Submit','Operator':'View/Add/Submit'}[r] }}</span></div>{% endfor %}</div></div>
+<div class="panel mt-4"><div class="panel-head"><b>Existing Users</b></div><table class="table"><thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Department</th><th>Status</th></tr></thead><tbody>{% for u in users %}<tr><td>{{u['full_name']}}</td><td>{{u['username']}}</td><td>{{u['role']}}</td><td>{{u['department']}}</td><td><span class="badge-soft">Active</span></td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}
+
+
+
