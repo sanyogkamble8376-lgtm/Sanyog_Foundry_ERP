@@ -19,6 +19,7 @@ def get_db_connection():
 
 def init_db():
     conn = get_db_connection()
+    # Department records table
     conn.execute('''
         CREATE TABLE IF NOT EXISTS department_records (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,8 +34,29 @@ def init_db():
             status TEXT DEFAULT 'Active'
         )
     ''')
+    
+    # Users table for login authentication
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            role TEXT NOT NULL
+        )
+    ''')
+    
+    # Insert default superadmin user (Username: superadmin, Password: admin123)
+    conn.execute('''
+        INSERT OR IGNORE INTO users (username, password, role)
+        VALUES ('superadmin', 'admin123', 'Superadmin')
+    ''')
+    
     conn.commit()
     conn.close()
+
+# Initialize database tables and default admin on startup
+with app.app_context():
+    init_db()
 
 fitling_sub_modules = [
     "Fitling Dashboard",
@@ -140,9 +162,14 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        if username == 'admin' and password == 'admin':
-            session['user_id'] = 1
-            session['username'] = 'Admin'
+        
+        conn = get_db_connection()
+        user = conn.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password)).fetchone()
+        conn.close()
+        
+        if user:
+            session['user_id'] = user['id']
+            session['username'] = user['username']
             return redirect(url_for('dashboard'))
         else:
             flash('Invalid Credentials', 'danger')
@@ -264,5 +291,4 @@ def admin_module():
     return redirect(url_for('department_module', dept_name='admin', item='Users'))
 
 if __name__ == '__main__':
-    init_db()
     app.run(debug=True)
