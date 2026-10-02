@@ -8,9 +8,9 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
 app = Flask(__name__)
-app.secret_key = 'sanyog_erp_secret_key'
+app.secret_key = 'company_erp_secret_key'
 
-DB_NAME = 'sanyog_erp.db'
+DB_NAME = 'company_erp.db'
 
 def get_db_connection():
     conn = sqlite3.connect(DB_NAME)
