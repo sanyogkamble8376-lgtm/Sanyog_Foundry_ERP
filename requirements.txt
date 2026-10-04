@@ -1,5 +1,3 @@
-Flask
+streamlit
 pandas
-openpyxl
 reportlab
-gunicorn
