@@ -1,199 +1,145 @@
 import streamlit as st
-import sqlite3
 import pandas as pd
-import io
-from reportlab.lib.pagesizes import letter
-from reportlab.lib import colors
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from datetime import datetime
 
-# --- Page Configuration ---
+# Page Configuration
 st.set_page_config(
-    page_title="Sanyog Foundry ERP",
+    page_title="Sanyog Foundry Operations Dashboard",
     page_icon="🏭",
     layout="wide"
 )
 
-DB_NAME = 'company_erp.db'
+# Custom CSS for Professional Enterprise Dashboard Styling
+st.markdown("""
+    <style>
+    .main-header {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        padding: 20px;
+        border-radius: 12px;
+        color: white;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .metric-container {
+        background-color: #1e293b;
+        border: 1px solid #334155;
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        color: white;
+    }
+    .dept-card {
+        background-color: #1e293b;
+        border-radius: 10px;
+        padding: 18px;
+        border-top: 5px solid #3b82f6;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        margin-bottom: 20px;
+        color: #f8fafc;
+        min-height: 280px;
+    }
+    .card-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #38bdf8;
+    }
+    .flow-bar {
+        background-color: #334155;
+        padding: 10px;
+        border-radius: 8px;
+        text-align: center;
+        font-weight: 600;
+        color: #f1f5f9;
+        font-size: 0.85rem;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-# --- Database Setup ---
-def get_db_connection():
-    conn = sqlite3.connect(DB_NAME)
-    conn.row_factory = sqlite3.Row
-    return conn
+# Top Header Section
+st.markdown("""
+    <div class="main-header">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h2>🏭 SANYOG FOUNDRY OPERATIONS DASHBOARD</h2>
+                <p style="color: #94a3b8; margin: 0;">Quality Castings | On-Time Delivery | Sustainable Growth</p>
+            </div>
+            <div style="display: flex; gap: 15px;">
+                <div style="background: #334155; padding: 8px 15px; border-radius: 8px; font-size: 0.9rem;">
+                    📅 <strong>Date:</strong> 08 Oct 2026
+                </div>
+                <div style="background: #065f46; padding: 8px 15px; border-radius: 8px; font-size: 0.9rem;">
+                    🟢 <strong>Plant Status:</strong> Running
+                </div>
+                <div style="background: #1e3a8a; padding: 8px 15px; border-radius: 8px; font-size: 0.9rem;">
+                    🎯 <strong>Overall OEE:</strong> 78.5%
+                </div>
+            </div>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
 
-def init_db():
-    conn = get_db_connection()
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS department_records (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            department TEXT NOT NULL,
-            sub_module TEXT NOT NULL,
-            record_name TEXT NOT NULL,
-            reference_no TEXT,
-            date_val TEXT,
-            rate REAL,
-            quantity TEXT,
-            details TEXT,
-            status TEXT DEFAULT 'Active'
-        )
-    ''')
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL,
-            role TEXT NOT NULL
-        )
-    ''')
-    conn.execute('''
-        INSERT OR IGNORE INTO users (username, password, role)
-        VALUES ('superadmin', 'admin123', 'Superadmin')
-    ''')
-    conn.commit()
-    conn.close()
+# End-to-End Process Flow Bar
+st.markdown("### 🔄 End-to-End Foundry Process Flow")
+flow_cols = st.columns(9)
+flows = ["Sales", "Development", "Purchase", "Store", "Production", "Core", "Fettling", "Dispatch", "Customer"]
+for i, col in enumerate(flow_cols):
+    with col:
+        st.markdown(f'<div class="flow-bar">{flows[i]}</div>', unsafe_allow_html=True)
 
-init_db()
+st.markdown("<br>", unsafe_allow_html=True)
 
-# --- Department & Submodule Mapping ---
-fitling_sub_modules = [
-    "Fitling Dashboard", "Fitling Job Entry", "Production Request", "Material Requirement",
-    "Material Issue", "Fitling Process", "Employee Assignment", "Workstation", "Tools",
-    "Quality Check", "Rework", "Rejection", "Time Tracking", "Daily Production", "Fitling Reports"
-]
+# Sidebar Navigation for detailed modules
+st.sidebar.title("🎛️ Navigation")
+view_mode = st.sidebar.radio("Select View", ["Operations Master Dashboard", "Department Management", "Reports & Analytics"])
 
-DEPARTMENT_SUBMODULES = {
-    'Sales': ["Sales Dashboard", "Customer Management", "Product Management", "Lead Management", "Quotation", "Sales Order", "Invoice / Billing", "Delivery Tracking", "Payment Management", "Sales Reports"],
-    'Development': ["Development Dashboard", "Project Management", "Module Management", "Task Management", "Requirement Management", "Bug Management", "Testing / QA", "Documentation", "Development Reports"],
-    'Purchase': ["Purchase Dashboard", "Supplier Master", "Item Master", "Purchase Requisition", "RFQ", "Supplier Quotation", "Purchase Order", "GRN", "Purchase Return", "Purchase Reports"],
-    'Store': ["Store Dashboard", "Item Master", "Category Management", "Godown Management", "Opening Stock", "Goods Receipt (GRN)", "Material Issue", "Material Return", "Stock Transfer", "Store Reports"],
-    'Production': ["Production Dashboard", "Product Master", "Bill of Materials", "Production Planning", "Production Order", "Material Requirement", "Material Issue", "WIP Management", "Production Reports"],
-    'Core': ["Core Dashboard", "Work Order", "Production Planning", "Job Card", "Process Management", "Raw Material Requirement", "Material Issue", "Core Reports"],
-    'Fettling': fitling_sub_modules,
-    'Quality': ["Quality Dashboard", "Incoming Quality Inspection", "In-Process Quality", "Final Quality Inspection", "Quality Standards", "NCR Management", "Quality Reports"],
-    'Laboratory': ["Lab Dashboard", "Sample Registration", "Sample Receiving", "Test Request", "Test Execution", "Result Entry", "Certificate Generation", "Lab Reports"],
-    'Dispatch': ["Dispatch Dashboard", "Dispatch Order", "Order Verification", "Picking", "Packing", "Dispatch Challan", "Shipment Tracking", "Dispatch Reports"],
-    'Accounts': ["Accounts Dashboard", "Chart of Accounts", "Sales Invoicing", "Purchase Bills", "Receipts", "Payments", "Expenses", "Tax / GST Reports", "Accounts Reports"],
-    'HR': ["HR Dashboard", "Employee Master", "Attendance Entry", "Leave Management", "Payroll & Salary", "HR Reports"],
-    'Maintenance': ["Maintenance Dashboard", "Asset Management", "Maintenance Request", "Breakdown Management", "Preventive Maintenance", "Maintenance Reports"],
-    'Plant Head': ["Plant Overview Dashboard", "Plant KPI", "Shift Approvals", "Resource Planning"],
-    'Management': ["Executive Dashboard", "Financial Overview", "Strategic Reports", "ROI Tracking"]
-}
-
-# --- PDF Generation Function ---
-def generate_pdf_report(records, title):
-    buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=30)
-    story = []
-
-    styles = getSampleStyleSheet()
-    title_style = ParagraphStyle(
-        'TitleStyle', parent=styles['Heading1'], fontSize=15, leading=18, textColor=colors.HexColor("#1e293b"), spaceAfter=15
-    )
-    story.append(Paragraph(f"<b>Report: {title}</b>", title_style))
-    story.append(Spacer(1, 10))
-
-    table_data = [["ID", "Record Name", "Ref / Spec", "Date", "Qty", "Rate", "Details"]]
-    for row in records:
-        table_data.append([
-            str(row['id']),
-            str(row['record_name']),
-            str(row['reference_no'] if row['reference_no'] else '-'),
-            str(row['date_val'] if row['date_val'] else '-'),
-            str(row['quantity'] if row['quantity'] else '-'),
-            str(row['rate'] if row['rate'] else '-'),
-            str(row['details'] if row['details'] else '-')
-        ])
-
-    pdf_table = Table(table_data, colWidths=[30, 110, 80, 70, 75, 75, 110])
-    pdf_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#0284c7")),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 9),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor("#f8fafc")),
-        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e1")),
-        ('FONTSIZE', (0, 1), (-1, -1), 8),
-    ]))
-
-    story.append(pdf_table)
-    doc.build(story)
-    buffer.seek(0)
-    return buffer
-
-# --- Sidebar UI ---
-st.sidebar.title("🏭 Sanyog Foundry ERP")
-selected_dept = st.sidebar.selectbox("Select Department", list(DEPARTMENT_SUBMODULES.keys()))
-submodules = DEPARTMENT_SUBMODULES[selected_dept]
-selected_submodule = st.sidebar.radio("Select Sub-Module", submodules)
-
-st.title(f"{selected_dept} Department")
-st.caption(f"Sub-module: **{selected_submodule}**")
-
-# --- Form Section ---
-with st.expander("➕ Add New Record Entry", expanded=True):
-    with st.form("entry_form", clear_on_submit=True):
-        col1, col2 = st.columns(2)
-        with col1:
-            rec_name = st.text_input("Record Name *")
-            ref_no = st.text_input("Reference No / Specification")
-            date_val = st.date_input("Record Date")
-        with col2:
-            rate = st.number_input("Rate / Amount", min_value=0.0, step=0.01)
-            quantity = st.text_input("Quantity / Days")
-            details = st.text_area("Additional Details / Remarks")
-        
-        submit_btn = st.form_submit_button("Save Record")
-        if submit_btn:
-            if not rec_name:
-                st.error("Please provide a Record Name!")
-            else:
-                conn = get_db_connection()
-                conn.execute('''
-                    INSERT INTO department_records (department, sub_module, record_name, reference_no, date_val, rate, quantity, details)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                ''', (selected_dept.lower(), selected_submodule, rec_name, ref_no, str(date_val), rate, quantity, details))
-                conn.commit()
-                conn.close()
-                st.success(f"Record saved under {selected_submodule}!")
-
-# --- Data Display & Filtering Section ---
-st.divider()
-st.subheader("📋 Saved Records")
-
-conn = get_db_connection()
-query = "SELECT * FROM department_records WHERE department = ? AND sub_module = ? ORDER BY id DESC"
-records = conn.execute(query, (selected_dept.lower(), selected_submodule)).fetchall()
-conn.close()
-
-if records:
-    df = pd.DataFrame([dict(r) for r in records])
-    st.dataframe(df[['id', 'record_name', 'reference_no', 'date_val', 'rate', 'quantity', 'details', 'status']], use_container_width=True)
-
-    # --- Export Section ---
-    col1, col2 = st.columns(2)
-    with col1:
-        # Excel Export
-        excel_buffer = io.BytesIO()
-        with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
-            df.to_excel(writer, index=False, sheet_name='ERP_Report')
-        excel_buffer.seek(0)
-        st.download_button(
-            label="📊 Download Excel Report",
-            data=excel_buffer,
-            file_name=f"{selected_dept}_{selected_submodule}_report.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
+if view_mode == "Operations Master Dashboard":
     
-    with col2:
-        # PDF Export
-        pdf_data = generate_pdf_report(records, f"{selected_dept} - {selected_submodule}")
-        st.download_button(
-            label="📄 Download PDF Report",
-            data=pdf_data,
-            file_name=f"{selected_dept}_{selected_submodule}_report.pdf",
-            mime="application/pdf"
-        )
+    # Department Cards Grid (4 columns x 3 rows)
+    departments = [
+        {"name": "📦 Store Department", "color": "#f97316", "work": "• RM, consumables, spares & FG receipt\n• Inventory control & stock records\n• Material issue & traceability", "kpi": "Inventory Accuracy: 98%\nStock Variance: < 2%"},
+        {"name": "🔧 Maintenance Department", "color": "#0ea5e9", "work": "• Preventive & breakdown maintenance\n• Furnace, machines, compressors\n• Equipment reliability & downtime", "kpi": "Machine Availability: 95%\nMTTR: < 4 hrs"},
+        {"name": "🚚 Dispatch Department", "color": "#22c55e", "work": "• Final quantity verification\n• Packing & identification\n• GRN, challan, invoice documentation", "kpi": "On-Time Delivery: 98%\nDispatch Accuracy: 99%"},
+        {"name": "📊 Accounts Department", "color": "#a855f7", "work": "• Financial transactions & billing\n• Payroll, costing, taxation\n• Financial records & reporting", "kpi": "Cost Variance: < 3%\nFinancial Accuracy: 99%"},
+        {"name": "🛒 Purchase Department", "color": "#6366f1", "work": "• Raw material & alloy sourcing\n• Supplier selection & negotiation\n• Quotation comparison & quality", "kpi": "Cost Saving: 5%\nSupplier OTD: 95%"},
+        {"name": "🛡️ Core Department", "color": "#14b8a6", "work": "• Core sand preparation & mixing\n• Core making, curing & baking\n• Dimensional inspection & storage", "kpi": "Core Rejection: < 3%\nCore Productivity: 10% ↑"},
+        {"name": "⚙️ Fettling Department", "color": "#eab308", "work": "• Sand removal & riser cutting\n• Shot blasting & grinding\n• Dressing & finishing operations", "kpi": "Finishing Rejection: < 2%\nProductivity: 10% ↑"},
+        {"name": "🔬 Quality Department", "color": "#8b5cf6", "work": "• Material to final inspection\n• Process control & defect analysis\n• CAPA & customer quality control", "kpi": "PPM < 500: < 9%\nCustomer Complaints: < 1%"},
+        {"name": "🏭 Production Department", "color": "#3b82f6", "work": "• Production planning & scheduling\n• Manpower & machine utilization\n• Process control & safe production", "kpi": "Achievement: 95%\nOEE: 78.5%"},
+        {"name": "💡 Development Department", "color": "#06b6d4", "work": "• New casting/product development\n• Process & pattern development\n• Trial casting & customer support", "kpi": "Lead Time: -20%\nTrial Success: 90%"},
+        {"name": "🧪 Laboratory Department", "color": "#1e40af", "work": "• Chemical analysis & spectrometer\n• Sand & hardness testing\n• Microstructure testing & reports", "kpi": "Testing Accuracy: 99%\nTurnaround Time: < 24 hrs"},
+        {"name": "🤝 Sales Department", "color": "#be185d", "work": "• Enquiry handling & quotation\n• Order follow-up & customer care\n• Sales planning & business growth", "kpi": "Order Growth: 10%\nEnquiry Conversion: 25%"}
+    ]
+
+    # Display in 3 columns grid
+    for i in range(0, len(departments), 3):
+        cols = st.columns(3)
+        for j in range(3):
+            if i + j < len(departments):
+                dept = departments[i + j]
+                with cols[j]:
+                    st.markdown(f"""
+                        <div class="dept-card" style="border-top-color: {dept['color']};">
+                            <div class="card-title">{dept['name']}</div>
+                            <hr style="margin: 5px 0 10px 0; border-color: #334155;">
+                            <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 8px;"><strong>Key Operations:</strong><br>{dept['work'].replace(chr(10), '<br>')}</p>
+                            <div style="background: rgba(15, 23, 42, 0.6); padding: 8px; border-radius: 6px; font-size: 0.85rem; border-left: 3px solid {dept['color']};">
+                                <strong>Key KPI:</strong><br>{dept['kpi'].replace(chr(10), '<br>')}
+                            </div>
+                        </div>
+                    """, unsafe_allow_html=True)
+
+    # Bottom Summary Bar
+    st.markdown("---")
+    b_cols = st.columns(4)
+    with b_cols[0]:
+        st.metric(label="Total Production (MT)", value="1,250 MT", delta="8% vs last month")
+    with b_cols[1]:
+        st.metric(label="Rejection Rate", value="2.1%", delta="-1.2% vs last month", delta_value="inverse")
+    with b_cols[2]:
+        st.metric(label="On-Time Delivery", value="98%", delta="3% vs last month")
+    with b_cols[3]:
+        st.metric(label="Customer Satisfaction", value="96%", delta="2% vs last month")
+
 else:
-    st.info("No records found for this sub-module yet.")
+    st.info("Switch to 'Operations Master Dashboard' from sidebar to view the comprehensive foundry enterprise view.")
