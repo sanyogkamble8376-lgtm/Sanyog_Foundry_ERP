@@ -1,0 +1,81 @@
+﻿{% extends "base.html" %}{% block content %}
+<div class="page-head">
+  <div><div class="crumb">Production</div><h1>Production Plan</h1><p>Create, track and approve production plans.</p></div>
+  <button class="primary-btn" data-bs-toggle="modal" data-bs-target="#planModal" onclick="resetPlanForm()">+ New Production Plan</button>
+</div>
+
+<div class="panel mb-4">
+  <div class="panel-head"><b>Production Plan Register</b><span class="badge-soft">{{ plans|length }} records</span></div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0" style="font-size:12px">
+      <thead><tr><th>Plan No</th><th>Part</th><th>Customer</th><th>Order Qty</th><th>Planned Qty</th><th>Target Date</th><th>Priority</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+      <tbody>
+      {% for p in plans %}
+      <tr>
+        <td><b>{{ p.plan_no }}</b><div class="text-muted" style="font-size:10px">{{ p.order_no or '-' }}</div></td>
+        <td><b>{{ p.part_no }}</b><div class="text-muted" style="font-size:10px">{{ p.part_name }}</div></td>
+        <td>{{ p.customer or '-' }}</td><td>{{ '%.0f'|format(p.order_qty or 0) }}</td><td><b>{{ '%.0f'|format(p.planned_qty or 0) }}</b></td>
+        <td>{{ p.target_date or '-' }}</td>
+        <td><span class="badge bg-light text-dark">{{ p.priority }}</span></td>
+        <td><span class="status-badge status-{{ p.status|lower }}">{{ p.status }}</span></td>
+        <td class="text-end">
+          <button class="btn btn-sm btn-light" onclick='editPlan({{ p|tojson }})'>Edit</button>
+          {% if p.status == 'Draft' %}
+          <form method="post" action="{{ url_for('production_plan_status', plan_id=p.id, status='Submitted') }}" class="d-inline"><button class="btn btn-sm btn-outline-primary">Submit</button></form>
+          {% elif p.status == 'Submitted' and session.get('role') in ['Admin','Manager'] %}
+          <form method="post" action="{{ url_for('production_plan_status', plan_id=p.id, status='Approved') }}" class="d-inline"><button class="btn btn-sm btn-outline-success">Approve</button></form>
+          <form method="post" action="{{ url_for('production_plan_status', plan_id=p.id, status='Rejected') }}" class="d-inline"><button class="btn btn-sm btn-outline-danger">Reject</button></form>
+          {% endif %}
+          {% if session.get('role') in ['Admin','Manager'] %}<form method="post" action="{{ url_for('delete_production_plan', plan_id=p.id) }}" class="d-inline" onsubmit="return confirm('Delete this Production Plan?')"><button class="btn btn-sm btn-outline-danger">Delete</button></form>{% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="9" class="text-center text-muted py-5">No Production Plans yet. Click <b>+ New Production Plan</b> to create the first entry.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal fade" id="planModal" tabindex="-1"><div class="modal-dialog modal-xl modal-dialog-centered"><div class="modal-content border-0 shadow">
+  <form method="post" action="{{ url_for('save_production_plan') }}">
+    <div class="modal-header"><div><h5 class="modal-title" id="modalTitle">New Production Plan</h5><small class="text-muted">Plan master entry</small></div><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body"><input type="hidden" name="id" id="plan_id">
+      <div class="row g-3">
+        <div class="col-md-3"><label class="form-label">Part No *</label><input class="form-control" name="part_no" id="part_no" required></div>
+        <div class="col-md-5"><label class="form-label">Part Name *</label><input class="form-control" name="part_name" id="part_name" required></div>
+        <div class="col-md-4"><label class="form-label">Customer</label><input class="form-control" name="customer" id="customer"></div>
+        <div class="col-md-3"><label class="form-label">Customer Order No.</label><input class="form-control" name="order_no" id="order_no"></div>
+        <div class="col-md-3"><label class="form-label">Order Qty</label><input type="number" step="0.01" min="0" class="form-control" name="order_qty" id="order_qty"></div>
+        <div class="col-md-3"><label class="form-label">Planned Qty *</label><input type="number" step="0.01" min="0.01" class="form-control" name="planned_qty" id="planned_qty" required></div>
+        <div class="col-md-3"><label class="form-label">Target Date</label><input type="date" class="form-control" name="target_date" id="target_date"></div>
+        <div class="col-md-3"><label class="form-label">Priority</label><select class="form-select" name="priority" id="priority"><option>Normal</option><option>High</option><option>Urgent</option></select></div>
+        <div class="col-12"><label class="form-label">Remarks</label><textarea class="form-control" name="remarks" id="remarks" rows="3"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="primary-btn" type="submit">Save Production Plan</button></div>
+  </form>
+</div></div></div>
+
+<style>
+.status-badge{padding:5px 9px;border-radius:20px;font-size:10px;font-weight:600}.status-draft{background:#f1f5f9;color:#475569}.status-submitted{background:#eff6ff;color:#2563eb}.status-approved{background:#ecfdf5;color:#15803d}.status-rejected{background:#fef2f2;color:#dc2626}
+.table th{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid #e7ebf2}.table td{border-color:#eef1f5}
+</style>
+<script>
+function resetPlanForm(){
+  document.getElementById('modalTitle').innerText='New Production Plan';
+  ['plan_id','part_no','part_name','customer','order_no','order_qty','planned_qty','target_date','remarks'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('priority').value='Normal';
+}
+function editPlan(p){
+  document.getElementById('modalTitle').innerText='Edit Production Plan - '+p.plan_no;
+  document.getElementById('plan_id').value=p.id; document.getElementById('part_no').value=p.part_no; document.getElementById('part_name').value=p.part_name;
+  document.getElementById('customer').value=p.customer||''; document.getElementById('order_no').value=p.order_no||''; document.getElementById('order_qty').value=p.order_qty||0;
+  document.getElementById('planned_qty').value=p.planned_qty||0; document.getElementById('target_date').value=p.target_date||''; document.getElementById('priority').value=p.priority||'Normal'; document.getElementById('remarks').value=p.remarks||'';
+  bootstrap.Modal.getOrCreateInstance(document.getElementById('planModal')).show();
+}
+</script>
+{% endblock %}
+
+
+

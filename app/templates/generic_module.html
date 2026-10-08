@@ -3,211 +3,386 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ module_name }} - company ERP</title>
-    <!-- Bootstrap CSS for Clean UI -->
+    <title>{{ module_name }} - Foundry ERP</title>
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .sidebar { min-height: 100vh; background-color: #1e293b; color: #fff; position: fixed; width: 250px; top: 0; left: 0; }
-        .sidebar a { color: #cbd5e1; text-decoration: none; display: block; padding: 10px 20px; transition: 0.2s; }
-        .sidebar a:hover, .sidebar a.active { background-color: #334155; color: #fff; }
-        .main-content { margin-left: 250px; padding: 20px; }
-        .sub-module-bar { background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; overflow-x: auto; white-space: nowrap; }
-        .sub-module-btn { margin-right: 5px; }
-        .report-box { background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        :root {
+            --primary-color: #0f172a;       /* Dark Navy / Slate */
+            --accent-color: #0284c7;        /* Professional Steel Blue */
+            --accent-hover: #0369a1;
+            --bg-color: #f8fafc;            /* Soft Clean Light Gray */
+            --card-bg: #ffffff;
+            --text-main: #334155;
+            --border-color: #e2e8f0;
+        }
+
+        body { 
+            background-color: var(--bg-color); 
+            font-family: 'Inter', sans-serif; 
+            color: var(--text-main);
+        }
+
+        /* Sidebar Styling */
+        .sidebar { 
+            min-height: 100vh; 
+            background-color: var(--primary-color); 
+            color: #f8fafc; 
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+        }
+        .sidebar .nav-link { 
+            color: #94a3b8; 
+            padding: 11px 16px; 
+            margin: 4px 0; 
+            border-radius: 8px; 
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+        }
+        .sidebar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+        }
+        .sidebar .nav-link.active { 
+            background-color: var(--accent-color); 
+            color: #ffffff; 
+            box-shadow: 0 2px 6px rgba(2, 132, 199, 0.4);
+        }
+
+        /* Header & Cards */
+        .page-header {
+            background-color: var(--card-bg);
+            padding: 20px 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .card-custom { 
+            border: 1px solid var(--border-color); 
+            border-radius: 12px; 
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            background-color: var(--card-bg);
+            overflow: hidden;
+        }
+        .card-header-custom {
+            background-color: #f1f5f9;
+            color: var(--primary-color);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+            padding: 14px 20px;
+        }
+
+        /* Table Styling */
+        .table-custom {
+            margin: 0;
+        }
+        .table-custom thead th { 
+            background-color: #1e293b; 
+            color: #ffffff; 
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 12px 16px;
+            border: none;
+        }
+        .table-custom tbody td {
+            padding: 12px 16px;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+        .table-custom tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        /* Form Controls */
+        .form-label {
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+        .form-control, .form-select {
+            border-color: var(--border-color);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+        }
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+        }
+
+        /* Buttons & Badges */
+        .btn-accent {
+            background-color: var(--accent-color);
+            color: #ffffff;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        .btn-accent:hover {
+            background-color: var(--accent-hover);
+            color: #ffffff;
+        }
+        .badge-custom {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Sidebar -->
-    <div class="sidebar p-3">
-        <h4 class="text-white mb-4"><i class="fas fa-industry"></i> company ERP</h4>
-        <a href="/"><i class="fas fa-home me-2"></i> Dashboard</a>
-        <a href="/global-po-tracker"><i class="fas fa-globe me-2"></i> Global PO Tracker</a>
-        <hr class="text-secondary">
-        <small class="text-uppercase text-muted px-3">Departments</small>
-        <a href="/department/fitling/Fitling-Dashboard"><i class="fas fa-tools me-2"></i> Fitling</a>
-        <a href="/department/production/Production-Dashboard"><i class="fas fa-cogs me-2"></i> Production</a>
-        <a href="/department/quality/Quality-Dashboard"><i class="fas fa-check-circle me-2"></i> Quality</a>
-        <a href="/department/maintenance/Maintenance-Dashboard"><i class="fas fa-wrench me-2"></i> Maintenance</a>
-        <a href="/department/dispatch/Dispatch-Dashboard"><i class="fas fa-truck me-2"></i> Dispatch</a>
-        <a href="/department/store/Store-Dashboard"><i class="fas fa-warehouse me-2"></i> Store</a>
-        <a href="/department/purchase/Purchase-Dashboard"><i class="fas fa-shopping-cart me-2"></i> Purchase</a>
-        <a href="/department/sales/Sales-Dashboard"><i class="fas fa-chart-line me-2"></i> Sales</a>
-        <a href="/department/accounts/Accounts-Dashboard"><i class="fas fa-calculator me-2"></i> Accounts</a>
-        <a href="/department/lab/Lab-Dashboard"><i class="fas fa-flask me-2"></i> Lab</a>
-        <a href="/department/development/Development-Dashboard"><i class="fas fa-code me-2"></i> Development</a>
-        <a href="/department/core/Core-Dashboard"><i class="fas fa-cube me-2"></i> Core</a>
-        <hr class="text-secondary">
-        <a href="/logout" class="text-danger"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
-    </div>
-
-    <!-- Main Content Area -->
-    <div class="main-content">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2><i class="fas fa-folder-open text-primary me-2"></i> {{ module_name }}</h2>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRecordModal">
-                <i class="fas fa-plus me-1"></i> Add New Record
-            </button>
-        </div>
-
-        <!-- Flash Messages (Fixed) -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <!-- Sub-Modules Horizontal Navigation Bar -->
-        <div class="sub-module-bar">
-            <strong><i class="fas fa-bars me-2"></i> Sub-Modules:</strong>
-            {% for sub in sub_modules %}
-                {% set safe_sub = sub.replace('/', '-') %}
-                <a href="{{ url_for('department_module', dept_name=dept_slug, item=safe_sub) }}" 
-                   class="btn btn-sm {% if current_item == sub %}btn-dark{% else %}btn-outline-secondary{% endif %} sub-module-btn">
-                   {{ sub }}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar Navigation -->
+        <div class="col-md-3 col-lg-2 sidebar p-3">
+            <div class="text-center my-3">
+                <h4 class="fw-bold text-white mb-0"><i class="fa-solid fa-industry me-2 text-info"></i>Foundry ERP</h4>
+                <small class="text-muted fs-7">Enterprise Management</small>
+            </div>
+            <div class="mb-3">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light w-100 btn-sm">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Dashboard
                 </a>
-            {% endfor %}
-        </div>
-
-        <!-- Report Generation & Format Selection Section -->
-        <div class="report-box">
-            <form method="GET" class="row g-3 align-items-center">
-                <div class="col-auto">
-                    <label class="col-form-label fw-bold"><i class="fas fa-calendar-alt me-1"></i> Date Filter:</label>
-                </div>
-                <div class="col-auto">
-                    <input type="date" name="start_date" value="{{ start_date }}" class="form-control form-control-sm">
-                </div>
-                <div class="col-auto">
-                    <label class="col-form-label">To:</label>
-                </div>
-                <div class="col-auto">
-                    <input type="date" name="end_date" value="{{ end_date }}" class="form-control form-control-sm">
-                </div>
-                <div class="col-auto">
-                    <button type="submit" class="btn btn-sm btn-success"><i class="fas fa-filter me-1"></i> Generate Report</button>
-                    <a href="{{ url_for('department_module', dept_name=dept_slug, item=current_item.replace('/', '-')) }}" class="btn btn-sm btn-outline-secondary">Reset</a>
-                </div>
-                
-                <!-- Download Report Dropdown (PDF, Excel, CSV) -->
-                <div class="col-auto ms-auto">
-                    <div class="dropdown">
-                        <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-download me-1"></i> Download Report As...
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ url_for('department_module', dept_name=dept_slug, item=current_item.replace('/', '-'), start_date=start_date, end_date=end_date, export='pdf') }}"><i class="fas fa-file-pdf text-danger me-2"></i> PDF Format</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('department_module', dept_name=dept_slug, item=current_item.replace('/', '-'), start_date=start_date, end_date=end_date, export='excel') }}"><i class="fas fa-file-excel text-success me-2"></i> Excel Format</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('department_module', dept_name=dept_slug, item=current_item.replace('/', '-'), start_date=start_date, end_date=end_date, export='csv') }}"><i class="fas fa-file-csv text-info me-2"></i> CSV Format</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <!-- Data Table Section -->
-        <div class="card shadow-sm">
-            <div class="card-header bg-white py-3">
-                <h5 class="mb-0 text-secondary">Current Sub-Module: <strong>{{ current_item }}</strong></h5>
             </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover mb-0 align-middle">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>ID</th>
-                                <th>Record / Particulars</th>
-                                <th>Ref / Ticket No</th>
-                                <th>Date</th>
-                                <th>Rate</th>
-                                <th>Quantity</th>
-                                <th>Details</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% if entries %}
-                                {% for row in entries %}
-                                <tr>
-                                    <td>{{ row['id'] }}</td>
-                                    <td class="fw-bold">{{ row['record_name'] }}</td>
-                                    <td>{{ row['reference_no'] }}</td>
-                                    <td>{{ row['date_val'] }}</td>
-                                    <td>{{ row['rate'] }}</td>
-                                    <td>{{ row['quantity'] }}</td>
-                                    <td>{{ row['details'] }}</td>
-                                    <td><span class="badge bg-success">{{ row['status'] }}</span></td>
-                                </tr>
-                                {% endfor %}
-                            {% else %}
-                                <tr>
-                                    <td colspan="8" class="text-center py-4 text-muted">
-                                        No records found for {{ current_item }}. Click 'Add New Record' to insert data.
-                                    </td>
-                                </tr>
-                            {% endif %}
-                        </tbody>
-                    </table>
-                </div>
+            <hr class="border-secondary">
+            <h6 class="text-uppercase text-muted fs-7 fw-bold mb-3 px-2">{{ module_name }} Sub-Modules</h6>
+            <div class="nav flex-column nav-pills">
+                {% for sub in sub_modules %}
+                    {% set safe_sub = sub.replace('/', '-').replace(' ', '-') %}
+                    <a href="{{ url_for('department_module', dept_name=dept_slug, item=safe_sub) }}" 
+                       class="nav-link {% if sub == current_item %}active{% endif %}">
+                       <i class="fa-solid fa-chevron-right me-2 fs-7"></i>{{ sub }}
+                    </a>
+                {% endfor %}
             </div>
         </div>
-    </div>
 
-    <!-- Add Record Modal -->
-    <div class="modal fade" id="addRecordModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form method="POST">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add Record to {{ current_item }}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
+        <!-- Main Content Area -->
+        <div class="col-md-9 col-lg-10 p-4">
+            
+            <!-- Page Header -->
+            <div class="page-header d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="fw-bold text-dark m-0">{{ module_name }}</h3>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle mt-2 badge-custom">Active Module: {{ current_item }}</span>
+                </div>
+                <div>
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm px-3">
+                        <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
+                    </a>
+                </div>
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show rounded-3" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Form Card -->
+            <div class="card card-custom mb-4">
+                <div class="card-header-custom d-flex align-items-center">
+                    <i class="fa-solid fa-square-plus me-2 text-primary"></i>
+                    <span>Add New Record - {{ current_item }}</span>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('department_module', dept_name=dept_slug, item=current_item.replace('/', '-').replace(' ', '-')) }}">
                         <input type="hidden" name="sub_module_selected" value="{{ current_item }}">
-                        <div class="mb-3">
-                            <label class="form-label">Record / Particulars Name *</label>
-                            <input type="text" name="record_name" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Reference / Ticket No</label>
-                            <input type="text" name="reference_no" class="form-control">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Date</label>
-                            <input type="date" name="date_val" class="form-control">
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Rate</label>
-                                <input type="number" step="any" name="rate" class="form-control">
+                        <div class="row g-3">
+                            
+                            {% if dept_slug in ['hr', 'human-resources'] %}
+                                <div class="col-md-3">
+                                    <label class="form-label">Employee Name / ID</label>
+                                    <input type="text" name="record_name" class="form-control" placeholder="e.g. EMP-101 (Suresh Patil)" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Designation / Department</label>
+                                    <input type="text" name="reference_no" class="form-control" placeholder="e.g. Mold Technician">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Date</label>
+                                    <input type="date" name="date_val" class="form-control">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Attendance / Working Days</label>
+                                    <input type="text" name="quantity" class="form-control" placeholder="e.g. 26 Days / 1 Leave">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Salary / Basic Pay (₹)</label>
+                                    <input type="number" step="0.01" name="rate" class="form-control" placeholder="e.g. 25000">
+                                </div>
+                                <div class="col-md-9">
+                                    <label class="form-label">Shift / Remarks</label>
+                                    <input type="text" name="details" class="form-control" placeholder="e.g. General Shift - Overtime: 2 hrs">
+                                </div>
+
+                            {% elif dept_slug in ['lab', 'laboratory'] %}
+                                <div class="col-md-3">
+                                    <label class="form-label">Heat No / Sample ID</label>
+                                    <input type="text" name="record_name" class="form-control" placeholder="e.g. H-2026" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Specification / Grade</label>
+                                    <input type="text" name="reference_no" class="form-control" placeholder="e.g. FG260 / SG400">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Testing Date</label>
+                                    <input type="date" name="date_val" class="form-control">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Quantity / Reading</label>
+                                    <input type="text" name="quantity" class="form-control" placeholder="e.g. 150 Pcs / 3.8% C">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Hardness / Value</label>
+                                    <input type="number" step="0.01" name="rate" class="form-control" placeholder="e.g. 210 BHN">
+                                </div>
+                                <div class="col-md-9">
+                                    <label class="form-label">Chemical Composition Details</label>
+                                    <input type="text" name="details" class="form-control" placeholder="e.g. C:3.4%, Si:2.1%, Mn:0.65%, S:0.02%">
+                                </div>
+
+                            {% else %}
+                                <div class="col-md-3">
+                                    <label class="form-label">Record Title / Item Name</label>
+                                    <input type="text" name="record_name" class="form-control" placeholder="Enter record name" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Reference No / PO / Spec</label>
+                                    <input type="text" name="reference_no" class="form-control" placeholder="e.g. REF-1002">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Date</label>
+                                    <input type="date" name="date_val" class="form-control">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Quantity / Unit</label>
+                                    <input type="text" name="quantity" class="form-control" placeholder="e.g. 100 Pcs / Kg">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Rate / Amount (₹)</label>
+                                    <input type="number" step="0.01" name="rate" class="form-control" placeholder="0.00">
+                                </div>
+                                <div class="col-md-9">
+                                    <label class="form-label">Details / Remarks</label>
+                                    <input type="text" name="details" class="form-control" placeholder="Enter additional notes or specifications">
+                                </div>
+                            {% endif %}
+
+                            <div class="col-12 text-end mt-4">
+                                <button type="submit" class="btn btn-accent px-4 py-2">
+                                    <i class="fa-solid fa-floppy-disk me-1"></i> Save Entry
+                                </button>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Quantity</label>
-                                <input type="text" name="quantity" class="form-control">
-                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Details / Remarks</label>
-                            <textarea name="details" class="form-control" rows="2"></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save Record</button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
+
+            <!-- Filter & Toolbar -->
+            <div class="card card-custom mb-4">
+                <div class="card-body py-3 px-4">
+                    <form method="GET" class="row g-3 align-items-center">
+                        <div class="col-auto">
+                            <span class="fw-semibold text-secondary fs-7"><i class="fa-solid fa-filter me-1"></i> Date Filter:</span>
+                        </div>
+                        <div class="col-auto">
+                            <input type="date" name="start_date" class="form-control form-control-sm" value="{{ start_date }}">
+                        </div>
+                        <div class="col-auto">
+                            <span class="text-muted">to</span>
+                        </div>
+                        <div class="col-auto">
+                            <input type="date" name="end_date" class="form-control form-control-sm" value="{{ end_date }}">
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-secondary btn-sm rounded-2">Apply</button>
+                            <a href="{{ url_for('department_module', dept_name=dept_slug, item=current_item.replace('/', '-').replace(' ', '-')) }}" class="btn btn-link btn-sm text-decoration-none">Reset</a>
+                        </div>
+                        
+                        <div class="col text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a href="?export=csv{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}" class="btn btn-outline-secondary">
+                                    <i class="fa-solid fa-file-csv me-1 text-success"></i> CSV
+                                </a>
+                                <a href="?export=excel{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}" class="btn btn-outline-secondary">
+                                    <i class="fa-solid fa-file-excel me-1 text-primary"></i> Excel
+                                </a>
+                                <a href="?export=pdf{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}" class="btn btn-outline-secondary">
+                                    <i class="fa-solid fa-file-pdf me-1 text-danger"></i> PDF Report
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Table Card -->
+            <div class="card card-custom">
+                <div class="card-header-custom d-flex align-items-center">
+                    <i class="fa-solid fa-list me-2 text-primary"></i>
+                    <span>Records Log</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-custom align-middle">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Record Name</th>
+                                    <th>Ref / Spec</th>
+                                    <th>Date</th>
+                                    <th>Qty / Value</th>
+                                    <th>Rate / Pay</th>
+                                    <th>Details / Remarks</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if entries %}
+                                    {% for row in entries %}
+                                    <tr>
+                                        <td><span class="text-muted fw-bold">#{{ row['id'] }}</span></td>
+                                        <td class="fw-semibold text-dark">{{ row['record_name'] }}</td>
+                                        <td>{{ row['reference_no'] if row['reference_no'] else '-' }}</td>
+                                        <td>{{ row['date_val'] if row['date_val'] else '-' }}</td>
+                                        <td><span class="badge bg-slate-100 text-dark border">{{ row['quantity'] if row['quantity'] else '-' }}</span></td>
+                                        <td>{{ row['rate'] if row['rate'] else '-' }}</td>
+                                        <td><small class="text-secondary">{{ row['details'] if row['details'] else '-' }}</small></td>
+                                        <td><span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">Active</span></td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted py-5">
+                                            <i class="fa-solid fa-folder-open fs-2 d-block mb-2 text-secondary"></i>
+                                            <span>No records available for {{ current_item }}.</span>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
+</div>
 
-    <!-- Bootstrap JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

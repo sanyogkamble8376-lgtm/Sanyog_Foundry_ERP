@@ -1,0 +1,392 @@
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+import sqlite3
+import os
+from functools import wraps
+from datetime import datetime
+
+app = Flask(__name__)
+
+# ============================================================
+# APP CONFIG
+# ============================================================
+
+app.secret_key = "change-this-secret-key"
+DB = os.path.join(os.path.dirname(__file__), "foundry_erp.db")
+
+# ============================================================
+# ALL 11 DEPARTMENTS
+# ============================================================
+
+DEPARTMENTS = {
+    "Sales": [
+        "Customers", "Enquiries", "Quotations", "Sales Orders", 
+        "Delivery Schedule", "Customer Complaints", "Reports"
+    ],
+    "Maintenance": [
+        "Machine Master", "Breakdown", "Preventive Maintenance", 
+        "AMC", "Spare Parts", "Lubrication", "Maintenance Reports"
+    ],
+    "Store": [
+        "Item Master", "GRN", "Material Issue", "Material Return", 
+        "Stock Transfer", "Stock Adjustment", "Physical Stock", "Stock Reports"
+    ],
+    "Fettling": [
+        "Job Cards", "Casting Receipt", "Cutting", "Grinding", 
+        "Shot Blasting", "Rework", "Rejection", "Operator Allocation", "Production Transfer"
+    ],
+    "Core": [
+        "Core Master", "Core Box", "Core Job Cards", "Core Production", 
+        "Core Material", "Core Inspection", "Core Rejection", "Core Stock", "Core Issue"
+    ],
+    "Dispatch": [
+        "Dispatch Plan", "Packing List", "Delivery Challan", "Vehicle", 
+        "Transporter", "E-Way Bill", "Dispatch Entry", "Dispatch Return"
+    ],
+    "Production": [
+        "Production Plan", "Job Cards", "Furnace", "Heat Management", 
+        "Melting", "Pouring", "Casting", "Rejection", "Reports"
+    ],
+    "Quality": [
+        "Inspection Plan", "Incoming QC", "Process QC", "Final QC", 
+        "Chemical Test", "Mechanical Test", "Dimension Test", "NCR", 
+        "Rework", "Customer Complaint", "CAPA"
+    ],
+    "Purchase": [
+        "Purchase Requisition", "RFQ", "Supplier Quotation", "Comparative Statement", 
+        "Purchase Order", "PO Amendment", "GRN", "Purchase Invoice", 
+        "Purchase Return", "Supplier Rating"
+    ],
+    "Accounts": [
+        "Sales Invoice", "Purchase Invoice", "Receipt", "Payment", 
+        "Expenses", "Customer Ledger", "Supplier Ledger", "GST", "Bank", 
+        "Cash", "Outstanding", "Trial Balance", "Profit & Loss"
+    ],
+    "Development": [
+        "New Part Development", "Drawing", "Pattern", "Process Sheet", 
+        "BOM", "Trial Production", "Sample Inspection", "Customer Approval", 
+        "Engineering Change", "Revision Management"
+    ]
+}
+
+ROLES = {
+    "Admin": ["view", "add", "edit", "delete", "approve", "reject", "export", "settings"],
+    "Manager": ["view", "add", "edit", "approve", "reject", "export"],
+    "Engineer": ["view", "add", "edit", "submit", "export"],
+    "Supervisor": ["view", "add", "edit", "submit"],
+    "Operator": ["view", "add", "submit"]
+}
+
+def db():
+    conn = sqlite3.connect(DB)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def init_db():
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            name TEXT,
+            role TEXT NOT NULL,
+            department TEXT,
+            active INTEGER DEFAULT 1,
+            created_at TEXT
+        )
+    """)
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS activities (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT,
+            action TEXT,
+            module TEXT,
+            details TEXT,
+            created_at TEXT
+        )
+    """)
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS production_plans (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            plan_no TEXT, part_no TEXT, part_name TEXT, customer TEXT,
+            quantity INTEGER, target_date TEXT, status TEXT DEFAULT 'Draft',
+            created_by TEXT, created_at TEXT
+        )
+    """)
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS job_cards (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            job_no TEXT, plan_no TEXT, part_no TEXT, part_name TEXT,
+            quantity INTEGER, process TEXT, priority TEXT, status TEXT DEFAULT 'Draft',
+            created_by TEXT, created_at TEXT
+        )
+    """)
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS heat_entries (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            heat_no TEXT UNIQUE, job_no TEXT, furnace_no TEXT, alloy_grade TEXT,
+            charge_material TEXT, charge_weight REAL, metal_qty REAL, temperature REAL,
+            melting_start TEXT, melting_end TEXT, pouring_time TEXT, operator TEXT,
+            remarks TEXT, status TEXT DEFAULT 'Draft', created_by TEXT, created_at TEXT
+        )
+    """)
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS customers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            customer_code TEXT UNIQUE, customer_name TEXT NOT NULL,
+            contact_person TEXT, phone TEXT, email TEXT, address TEXT,
+            created_by TEXT, created_at TEXT
+        )
+    """)
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS sales_orders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            order_no TEXT UNIQUE, customer_name TEXT, part_no TEXT, part_name TEXT,
+            quantity INTEGER, rate REAL, total_amount REAL, delivery_date TEXT,
+            status TEXT DEFAULT 'Draft', created_by TEXT, created_at TEXT
+        )
+    """)
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS department_entries (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            department TEXT,
+            module_name TEXT,
+            ref_no TEXT,
+            item_name TEXT,
+            quantity REAL,
+            amount REAL,
+            status TEXT DEFAULT 'Draft',
+            remarks TEXT,
+            created_by TEXT,
+            created_at TEXT
+        )
+    """)
+
+    cur.execute("SELECT id FROM users WHERE username = ?", ("admin",))
+    if not cur.fetchone():
+        cur.execute("""
+            INSERT INTO users (username, password, name, role, department, active, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, ("admin", "admin123", "System Administrator", "Admin", "All", 1, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+
+    conn.commit()
+    conn.close()
+
+def login_required(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if "user_id" not in session:
+            return redirect(url_for("login"))
+        return func(*args, **kwargs)
+    return wrapper
+
+@app.route("/", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "").strip()
+
+        conn = db()
+        user = conn.execute("SELECT * FROM users WHERE username = ? AND password = ? AND active = 1", (username, password)).fetchone()
+        conn.close()
+
+        if user:
+            session["user_id"] = user["id"]
+            session["username"] = user["username"]
+            session["name"] = user["name"]
+            session["role"] = user["role"]
+            session["department"] = user["department"]
+            return redirect(url_for("dashboard"))
+        flash("Invalid username or password", "danger")
+
+    return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
+
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    conn = db()
+    p_plans = conn.execute("SELECT COUNT(*) AS total FROM production_plans").fetchone()["total"]
+    j_cards = conn.execute("SELECT COUNT(*) AS total FROM job_cards").fetchone()["total"]
+    heats = conn.execute("SELECT COUNT(*) AS total FROM heat_entries").fetchone()["total"]
+    users_count = conn.execute("SELECT COUNT(*) AS total FROM users").fetchone()["total"]
+    conn.close()
+
+    return render_template(
+        "dashboard.html",
+        departments=DEPARTMENTS,
+        production_plans=p_plans,
+        job_cards=j_cards,
+        heats=heats,
+        users=users_count
+    )
+
+@app.route("/users")
+@login_required
+def users():
+    conn = db()
+    all_users = conn.execute("SELECT * FROM users").fetchall()
+    conn.close()
+    return render_template("users.html", users=all_users, departments=DEPARTMENTS)
+
+@app.route("/module/<dept>/<path:item>")
+@login_required
+def module(dept, item):
+    clean_item = item.replace("-", " ").replace("_", " ").title()
+
+    if dept == "Sales" and clean_item == "Customers":
+        return redirect(url_for("sales_customers"))
+    if dept == "Sales" and clean_item == "Sales Orders":
+        return redirect(url_for("sales_orders"))
+    if dept == "Production" and clean_item == "Heat Management":
+        return redirect(url_for("heat_management"))
+    if dept == "Production" and clean_item == "Production Plan":
+        return redirect(url_for("production_plans"))
+    if dept == "Production" and clean_item == "Job Cards":
+        return redirect(url_for("production_job_cards"))
+
+    conn = db()
+    entries = conn.execute("""
+        SELECT * FROM department_entries 
+        WHERE department = ? AND module_name = ? 
+        ORDER BY id DESC
+    """, (dept, clean_item)).fetchall()
+    conn.close()
+
+    return render_template(
+        "generic_module.html",
+        department=dept,
+        module_name=clean_item,
+        entries=entries,
+        departments=DEPARTMENTS
+    )
+
+@app.route("/module/save", methods=["POST"])
+@login_required
+def save_generic_entry():
+    dept = request.form.get("department")
+    module_name = request.form.get("module_name")
+    ref_no = request.form.get("ref_no")
+    item_name = request.form.get("item_name")
+    quantity = float(request.form.get("quantity") or 0)
+    amount = float(request.form.get("amount") or 0)
+    remarks = request.form.get("remarks")
+
+    conn = db()
+    conn.execute("""
+        INSERT INTO department_entries 
+        (department, module_name, ref_no, item_name, quantity, amount, status, remarks, created_by, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, 'Draft', ?, ?, ?)
+    """, (dept, module_name, ref_no, item_name, quantity, amount, remarks, session["username"], datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    conn.commit()
+    conn.close()
+
+    flash(f"{module_name} entry saved successfully.", "success")
+    return redirect(url_for("module", dept=dept, item=module_name.lower().replace(" ", "-")))
+
+# ============================================================
+# SPECIFIC MODULE ROUTES
+# ============================================================
+
+@app.route("/sales/customers")
+@login_required
+def sales_customers():
+    conn = db()
+    customers = conn.execute("SELECT * FROM customers ORDER BY id DESC").fetchall()
+    conn.close()
+    return render_template("sales_customers.html", customers=customers, departments=DEPARTMENTS)
+
+@app.route("/sales/customers/save", methods=["POST"])
+@login_required
+def save_customer():
+    code = request.form.get("customer_code")
+    name = request.form.get("customer_name")
+    person = request.form.get("contact_person")
+    phone = request.form.get("phone")
+    email = request.form.get("email")
+    address = request.form.get("address")
+
+    conn = db()
+    conn.execute("""
+        INSERT INTO customers (customer_code, customer_name, contact_person, phone, email, address, created_by, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, (code, name, person, phone, email, address, session["username"], datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    conn.commit()
+    conn.close()
+    flash("Customer added successfully.", "success")
+    return redirect(url_for("sales_customers"))
+
+@app.route("/sales/orders")
+@login_required
+def sales_orders():
+    conn = db()
+    orders = conn.execute("SELECT * FROM sales_orders ORDER BY id DESC").fetchall()
+    conn.close()
+    return render_template("sales_orders.html", orders=orders, departments=DEPARTMENTS)
+
+@app.route("/production/plans")
+@login_required
+def production_plans():
+    conn = db()
+    plans = conn.execute("SELECT * FROM production_plans ORDER BY id DESC").fetchall()
+    conn.close()
+    return render_template("production_plans.html", plans=plans, departments=DEPARTMENTS)
+
+# Added missing save_production_plan route here
+@app.route("/production/plans/save", methods=["POST"])
+@login_required
+def save_production_plan():
+    plan_no = request.form.get("plan_no")
+    part_no = request.form.get("part_no")
+    part_name = request.form.get("part_name")
+    customer = request.form.get("customer")
+    quantity = int(request.form.get("quantity") or 0)
+    target_date = request.form.get("target_date")
+
+    conn = db()
+    conn.execute("""
+        INSERT INTO production_plans (plan_no, part_no, part_name, customer, quantity, target_date, status, created_by, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, 'Draft', ?, ?)
+    """, (plan_no, part_no, part_name, customer, quantity, target_date, session["username"], datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    conn.commit()
+    conn.close()
+
+    flash("Production plan created successfully.", "success")
+    return redirect(url_for("production_plans"))
+
+@app.route("/production/job-cards")
+@login_required
+def production_job_cards():
+    conn = db()
+    job_cards = conn.execute("SELECT * FROM job_cards ORDER BY id DESC").fetchall()
+    conn.close()
+    return render_template("job_cards.html", job_cards=job_cards, departments=DEPARTMENTS)
+
+@app.route("/production/heat-management")
+@login_required
+def heat_management():
+    conn = db()
+    heats = conn.execute("SELECT * FROM heat_entries ORDER BY id DESC").fetchall()
+    conn.close()
+    return render_template("heat_management.html", heats=heats, departments=DEPARTMENTS)
+
+# ============================================================
+# MAIN EXECUTION
+# ============================================================
+
+if __name__ == "__main__":
+    init_db()
+    app.run(debug=True, port=5000)
