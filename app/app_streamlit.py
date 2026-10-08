@@ -20,14 +20,6 @@ st.markdown("""
         margin-bottom: 20px;
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
-    .metric-container {
-        background-color: #1e293b;
-        border: 1px solid #334155;
-        padding: 15px;
-        border-radius: 10px;
-        text-align: center;
-        color: white;
-    }
     .dept-card {
         background-color: #1e293b;
         border-radius: 10px;
@@ -135,7 +127,7 @@ if view_mode == "Operations Master Dashboard":
     with b_cols[0]:
         st.metric(label="Total Production (MT)", value="1,250 MT", delta="8% vs last month")
     with b_cols[1]:
-        st.metric(label="Rejection Rate", value="2.1%", delta="-1.2% vs last month", delta_value="inverse")
+        st.metric(label="Rejection Rate", value="2.1%", delta="-1.2% vs last month")
     with b_cols[2]:
         st.metric(label="On-Time Delivery", value="98%", delta="3% vs last month")
     with b_cols[3]:
