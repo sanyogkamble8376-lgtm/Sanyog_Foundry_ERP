@@ -288,5 +288,3 @@ def department_module(dept_name, item):
 def admin_module():
     return redirect(url_for('department_module', dept_name='admin', item='Users'))
 
-if __name__ == '__main__':
-    app.run(debug=True)
