@@ -69,26 +69,33 @@ st.markdown("<br>", unsafe_allow_html=True)
 if 'selected_dept' not in st.session_state:
     st.session_state.selected_dept = "Operations Master Dashboard"
 
-# Sidebar Navigation
-st.sidebar.title("🎛️ Navigation")
+# Sidebar Navigation Options
 view_options = [
     "Operations Master Dashboard", 
-    "Store Department", 
-    "Maintenance Department", 
-    "Dispatch Department", 
-    "Accounts Department", 
-    "Purchase Department", 
-    "Core Department", 
-    "Fettling Department", 
-    "Quality Department", 
-    "Production Department", 
-    "Development Department", 
-    "Laboratory Department", 
-    "Sales Department"
+    "📦 Store Department", 
+    "🔧 Maintenance Department", 
+    "🚚 Dispatch Department", 
+    "📊 Accounts Department", 
+    "🛒 Purchase Department", 
+    "🛡️ Core Department", 
+    "⚙️ Fettling Department", 
+    "🔬 Quality Department", 
+    "🏭 Production Department", 
+    "💡 Development Department", 
+    "🧪 Laboratory Department", 
+    "🤝 Sales Department"
 ]
 
-# Sync sidebar with session state
-selected_view = st.sidebar.radio("Select View", view_options, index=view_options.index(st.session_state.selected_dept))
+# Ensure current state exists in options, default to 0 if not found
+current_selection = st.session_state.selected_dept
+if current_selection not in view_options:
+    current_selection = "Operations Master Dashboard"
+    
+currentIndex = view_options.index(current_selection)
+
+# Sidebar Navigation
+st.sidebar.title("🎛️ Navigation")
+selected_view = st.sidebar.radio("Select View", view_options, index=currentIndex)
 st.session_state.selected_dept = selected_view
 
 if st.session_state.selected_dept == "Operations Master Dashboard":
@@ -120,9 +127,7 @@ if st.session_state.selected_dept == "Operations Master Dashboard":
                         st.markdown(f"**Operations:**\n{dept['work']}")
                         st.info(f"**Key KPI:**\n{dept['kpi']}")
                         
-                        # Clean button name without emoji for matching
-                        clean_name = dept['name'].split(" ", 1)[1]
-                        if st.button(f"Manage {clean_name}", key=f"btn_{i+j}"):
+                        if st.button(f"Manage {dept['name'].split(' ', 1)[1]}", key=f"btn_{i+j}"):
                             st.session_state.selected_dept = dept['name']
                             st.rerun()
 
