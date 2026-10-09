@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS for Professional Pure White, Faint Blue & Dark Blue Theme
+# Custom CSS for Professional Pure White, Faint Blue & Dark Blue Theme (Line-Down Vertical Layout)
 st.markdown("""
     <style>
     /* Global Background - Pure White */
@@ -27,23 +27,22 @@ st.markdown("""
         box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15);
     }
     
-    /* Department Cards - Clean White with Dark Blue Accent Top */
-    .dept-card {
+    /* Department Line-Down Cards (Clean White with Dark Blue Left Border) */
+    .dept-card-line {
         background-color: #ffffff;
         border-radius: 10px;
-        padding: 16px;
+        padding: 16px 20px;
         border: 1px solid #e2e8f0;
-        border-top: 5px solid #1e40af;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-        margin-bottom: 16px;
+        border-left: 6px solid #1e40af;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        margin-bottom: 12px;
         color: #1e293b;
-        min-height: 230px;
     }
     .card-title {
-        font-size: 1.05rem;
+        font-size: 1.1rem;
         font-weight: 700;
-        margin-bottom: 8px;
         color: #1e3a8a;
+        margin-bottom: 4px;
     }
     
     /* Dark Blue Action Buttons */
@@ -53,8 +52,7 @@ st.markdown("""
         border-radius: 6px !important;
         font-weight: 600 !important;
         border: none !important;
-        padding: 8px 14px !important;
-        width: 100% !important;
+        padding: 8px 16px !important;
     }
     .stButton>button:hover {
         background-color: #1e3a8a !important;
@@ -170,6 +168,8 @@ if selected_view != st.session_state.selected_dept:
 
 if st.session_state.selected_dept == "Dashboard":
     
+    st.markdown("### 📋 All Departments Line-Down Directory")
+    
     departments = [
         {"name": "📦 Store", "access": "Create/Edit Stock Entries, View PO & GRN", "auth": "Physical verification before receipt/issue", "kpi": "Inventory Accuracy 98%"},
         {"name": "🔧 Maintenance", "access": "Create/Edit PM & Breakdown Logs", "auth": "Authorized maintenance & safe restart confirmation", "kpi": "Machine Availability 95%"},
@@ -187,28 +187,26 @@ if st.session_state.selected_dept == "Dashboard":
         {"name": "👑 Company Head", "access": "View All Consolidated Financials & KPIs", "auth": "Company policy, budget & major investments.", "kpi": "Monthly Revenue: ₹ 4.15 Cr"}
     ]
 
-    for i in range(0, len(departments), 3):
-        cols = st.columns(3)
-        for j in range(3):
-            if i + j < len(departments):
-                dept = departments[i + j]
-                with cols[j]:
-                    st.markdown(f"""
-                        <div class="dept-card">
-                            <div class="card-title">{dept['name']}</div>
-                            <hr style="margin: 4px 0 6px 0; border-color: #e2e8f0;">
-                            <p style="font-size: 0.78rem; color: #475569; margin-bottom: 4px;"><strong>Access Rights:</strong><br>{dept['access']}</p>
-                            <p style="font-size: 0.78rem; color: #475569; margin-bottom: 6px;"><strong>Authority:</strong><br>{dept['auth']}</p>
-                            <div style="background: #f0f6ff; padding: 6px; border-radius: 6px; font-size: 0.78rem; border-left: 3px solid #1e40af; color: #1e40af;">
-                                <strong>KPI:</strong> {dept['kpi']}
-                            </div>
-                        </div>
-                    """, unsafe_allow_html=True)
-                    
-                    clean_name = dept['name'].split(' ', 1)[1].strip()
-                    if st.button(f"Manage {clean_name}", key=f"btn_{i+j}", use_container_width=True):
-                        st.session_state.selected_dept = clean_name
-                        st.rerun()
+    # Vertical Line-Down Listing for all 14 departments
+    for dept in departments:
+        col_info, col_btn = st.columns([5, 1])
+        with col_info:
+            st.markdown(f"""
+                <div class="dept-card-line">
+                    <div class="card-title">{dept['name']}</div>
+                    <div style="display: flex; gap: 20px; font-size: 0.82rem; color: #475569; margin-top: 4px;">
+                        <div><strong>Access:</strong> {dept['access']}</div>
+                        <div><strong>Authority:</strong> {dept['auth']}</div>
+                        <div style="color: #1e40af; font-weight: 600;"><strong>KPI:</strong> {dept['kpi']}</div>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+        with col_btn:
+            st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
+            clean_name = dept['name'].split(' ', 1)[1].strip()
+            if st.button(f"Manage", key=f"btn_line_{clean_name}", use_container_width=True):
+                st.session_state.selected_dept = clean_name
+                st.rerun()
 
     st.markdown("---")
     b_cols = st.columns(4)
