@@ -8,12 +8,12 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS for Professional White & Faint Blue Enterprise Dashboard Styling
+# Custom CSS for Professional Pure White & Faint Blue Enterprise Dashboard Styling
 st.markdown("""
     <style>
-    /* Global App Background & Font */
+    /* Global App Background - Pure White */
     .stApp {
-        background-color: #f8fafc;
+        background-color: #ffffff;
         color: #1e293b;
     }
     
@@ -29,7 +29,7 @@ st.markdown("""
     
     /* End-to-End Process Flow Bar */
     .flow-bar {
-        background-color: #e0f2fe;
+        background-color: #f0f9ff;
         border: 1px solid #bae6fd;
         padding: 10px;
         border-radius: 8px;
@@ -39,14 +39,14 @@ st.markdown("""
         font-size: 0.85rem;
     }
     
-    /* Professional Department Cards (White & Faint Blue Theme) */
+    /* Professional Department Cards (Pure White Background with Soft Border & Faint Blue Accents) */
     .dept-card {
         background-color: #ffffff;
         border-radius: 10px;
         padding: 18px;
         border: 1px solid #e2e8f0;
         border-top: 5px solid #0284c7;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
         margin-bottom: 20px;
         color: #1e293b;
         min-height: 290px;
@@ -58,9 +58,9 @@ st.markdown("""
         color: #0369a1;
     }
     
-    /* Sidebar Styling */
+    /* Sidebar Styling - Light Faint Blue/Gray */
     section[data-testid="stSidebar"] {
-        background-color: #f1f5f9;
+        background-color: #f8fafc;
         border-right: 1px solid #e2e8f0;
     }
     </style>
@@ -140,20 +140,20 @@ if selected_view != st.session_state.selected_dept:
 if st.session_state.selected_dept == "Operations Master Dashboard":
     
     departments = [
-        {"name": "📦 Store Department", "color": "#0284c7", "access": "Create/Edit Stock Entries, View PO & GRN", "auth": "Physical verification nantar receipt/issue नोंद करणे.", "kpi": "Inventory Accuracy: 98%"},
-        {"name": "🔧 Maintenance Department", "color": "#0284c7", "access": "Create/Edit PM & Breakdown Logs", "auth": "Authorized maintenance & safe restart confirmation.", "kpi": "Machine Availability: 95%"},
-        {"name": "🚚 Dispatch Department", "color": "#0284c7", "access": "Create DC, Packing list, View Sales Order", "auth": "Quality clearance & authorized documents nantar dispatch.", "kpi": "On-Time Delivery: 98%"},
-        {"name": "📊 Accounts Department", "color": "#0284c7", "access": "View PO, GRN, SO, Invoices, Ledgers", "auth": "Payment/billing approval workflow nustar entries.", "kpi": "Financial Accuracy: 99%"},
-        {"name": "🛒 Purchase Department", "color": "#0284c7", "access": "Create PR/PO, View Store Stock", "auth": "PO approval delegation nustar issue karne.", "kpi": "Supplier OTD: 95%"},
-        {"name": "🛡️ Core Department", "color": "#0284c7", "access": "Create Core Output, View Production Plan", "auth": "Approved recipe nusar core closure.", "kpi": "Core Rejection: < 3%"},
-        {"name": "⚙️ Fettling Department", "color": "#0284c7", "access": "Create Output/Rework, View Job Card", "auth": "Operation completion; final quality release nahi.", "kpi": "Finishing Rejection: < 2%"},
-        {"name": "🔬 Quality Department", "color": "#0284c7", "access": "Create Inspection/NCR, Hold/Release", "auth": "Quality hold/release niyamanusar final clearance.", "kpi": "First Pass Yield: 96.5%"},
-        {"name": "🏭 Production Department", "color": "#0284c7", "access": "Create Plan/Output, View Lab/Quality", "auth": "Production completion; quality release nahi.", "kpi": "Target Achievement: 96%"},
-        {"name": "💡 Development Department", "color": "#0284c7", "access": "Create Feasibility/Trials, View Reports", "auth": "Engineering change sathi designated approval.", "kpi": "First Trial Success: 88%"},
-        {"name": "🧪 Laboratory Department", "color": "#0284c7", "access": "Create Test Results, View Heat/Specs", "auth": "Test report jari karne; commercial approval nahi.", "kpi": "Testing Accuracy: 99.5%"},
-        {"name": "🤝 Sales Department", "color": "#0284c7", "access": "Create Quotations/SOs, View Dispatch/Accounts", "auth": "Delegated limit madhe quotation / order coordination.", "kpi": "Order Booking: ₹ 4.5 Cr"},
-        {"name": "👔 Plant Head Portal", "color": "#059669", "access": "View All Plant Reports & Department Records", "auth": "Delegated operational approvals & escalation.", "kpi": "Plant OEE: 78.5%"},
-        {"name": "👑 Company Head / Management", "color": "#0369a1", "access": "View All Consolidated Financials & KPIs", "auth": "Company policy, budget & major investments.", "kpi": "Monthly Revenue: ₹ 4.15 Cr"}
+        {"name": "📦 Store Department", "access": "Create/Edit Stock Entries, View PO & GRN", "auth": "Physical verification nantar receipt/issue नोंद करणे.", "kpi": "Inventory Accuracy: 98%"},
+        {"name": "🔧 Maintenance Department", "access": "Create/Edit PM & Breakdown Logs", "auth": "Authorized maintenance & safe restart confirmation.", "kpi": "Machine Availability: 95%"},
+        {"name": "🚚 Dispatch Department", "access": "Create DC, Packing list, View Sales Order", "auth": "Quality clearance & authorized documents nantar dispatch.", "kpi": "On-Time Delivery: 98%"},
+        {"name": "📊 Accounts Department", "access": "View PO, GRN, SO, Invoices, Ledgers", "auth": "Payment/billing approval workflow nustar entries.", "kpi": "Financial Accuracy: 99%"},
+        {"name": "🛒 Purchase Department", "access": "Create PR/PO, View Store Stock", "auth": "PO approval delegation nustar issue karne.", "kpi": "Supplier OTD: 95%"},
+        {"name": "🛡️ Core Department", "access": "Create Core Output, View Production Plan", "auth": "Approved recipe nusar core closure.", "kpi": "Core Rejection: < 3%"},
+        {"name": "⚙️ Fettling Department", "access": "Create Output/Rework, View Job Card", "auth": "Operation completion; final quality release nahi.", "kpi": "Finishing Rejection: < 2%"},
+        {"name": "🔬 Quality Department", "access": "Create Inspection/NCR, Hold/Release", "auth": "Quality hold/release niyamanusar final clearance.", "kpi": "First Pass Yield: 96.5%"},
+        {"name": "🏭 Production Department", "access": "Create Plan/Output, View Lab/Quality", "auth": "Production completion; quality release nahi.", "kpi": "Target Achievement: 96%"},
+        {"name": "💡 Development Department", "access": "Create Feasibility/Trials, View Reports", "auth": "Engineering change sathi designated approval.", "kpi": "First Trial Success: 88%"},
+        {"name": "🧪 Laboratory Department", "access": "Create Test Results, View Heat/Specs", "auth": "Test report jari karne; commercial approval nahi.", "kpi": "Testing Accuracy: 99.5%"},
+        {"name": "🤝 Sales Department", "access": "Create Quotations/SOs, View Dispatch/Accounts", "auth": "Delegated limit madhe quotation / order coordination.", "kpi": "Order Booking: ₹ 4.5 Cr"},
+        {"name": "👔 Plant Head Portal", "access": "View All Plant Reports & Department Records", "auth": "Delegated operational approvals & escalation.", "kpi": "Plant OEE: 78.5%"},
+        {"name": "👑 Company Head / Management", "access": "View All Consolidated Financials & KPIs", "auth": "Company policy, budget & major investments.", "kpi": "Monthly Revenue: ₹ 4.15 Cr"}
     ]
 
     # Grid Display (3 columns per row)
