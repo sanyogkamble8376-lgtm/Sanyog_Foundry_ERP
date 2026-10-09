@@ -330,7 +330,7 @@ else:
             }), use_container_width=True)
             st.bar_chart(pd.DataFrame({"Dispatched Tonnage (MT)": [310, 330, 345, 360]}))
 
-    # 4. ACCOUNTS DEPARTMENT (Updated with professional foundry working, P2P, O2C, vouchers & BRS)
+    # 4. ACCOUNTS DEPARTMENT (Professional P2P, O2C, vouchers & BRS)
     elif "Accounts" in current_dept:
         with tab1:
             st.subheader("📊 Ledger & Voucher Register (Purchase, Sales & Receipts)")
@@ -385,23 +385,61 @@ else:
             }), use_container_width=True)
             st.line_chart(pd.DataFrame({"Cost Variance %": [2.8, 2.5, 2.2, 2.0]}))
 
-    # 5. PURCHASE DEPARTMENT
+    # 5. PURCHASE DEPARTMENT (Professional Procurement, PR, RFQ, CS, PO & Matching)
     elif "Purchase" in current_dept:
         with tab1:
-            st.subheader("Sourcing, Quotations & Supplier OTD")
-            st.dataframe(pd.DataFrame({"PO No": ["PO-501", "PO-502"], "Vendor": ["JSW Steel", "National Alloys"], "Material": ["Pig Iron", "Ferro Silicon"], "Status": ["Approved", "Dispatched"]}), use_container_width=True)
+            st.subheader("🛒 Purchase Requisitions, Comparative Statements & PO Register")
+            st.dataframe(pd.DataFrame({
+                "PR No.": ["PR-2026-011", "PR-2026-012", "PR-2026-013"],
+                "Department": ["Furnace Dept", "Core Shop", "Maintenance"],
+                "Item Description": ["Pig Iron (Grade-1)", "Resin Binder", "Hydraulic Pump Parts"],
+                "Order Qty": ["15 MT", "2000 Kg", "1 Set"],
+                "PO No.": ["PO-501", "PO-502", "PO-503"],
+                "Supplier Name": ["JSW Steel", "National Chem", "Industrial Spares"],
+                "Expected Delivery": ["12-Oct-2026", "15-Oct-2026", "20-Oct-2026"],
+                "Status": ["PO Issued", "Approved", "In Transit"]
+            }), use_container_width=True)
+            st.info("💡 **Procurement Chain:** PR No. → RFQ → Comparative Statement (CS) → PO No. → Gate Inward → GRN No. → Supplier Invoice Matching.")
         with tab2:
-            st.subheader("Create Purchase Order")
-            with st.form("purchase_form"):
-                st.text_input("Vendor Name")
-                st.text_input("Material / Service Description")
-                st.number_input("Estimated Cost (₹)", 0.0)
-                st.form_submit_button("Issue PO")
+            st.subheader("Create Purchase Requisition, RFQ & Purchase Order (PO)")
+            with st.form("purchase_doc_form"):
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.text_input("PR No. & Requesting Department")
+                    st.text_input("RFQ No. & Supplier Name")
+                    st.text_input("Comparative Statement (CS) No.")
+                    st.text_input("PO No. - Purchase Order No.")
+                    st.text_input("Item Code & Material Description")
+                    st.number_input("Order Quantity", 0.0)
+                with col2:
+                    st.number_input("Negotiated Rate (₹)", 0.0)
+                    st.number_input("GST / Freight Charges (%)", 0.0)
+                    st.date_input("Expected Delivery Date")
+                    st.text_input("Gate Inward No. & GRN No. (Linking)")
+                    st.text_input("Supplier Invoice No.")
+                    st.selectbox("Supplier OTD & Quality Status", ["On-Time & Accepted", "Delayed Supply", "Quality Rejected / NCR", "Pending"])
+                st.text_area("Terms & Conditions, Payment Terms & Remarks")
+                st.form_submit_button("Save Purchase Record & Release PO")
         with tab3:
-            st.subheader("🛒 Purchase Department Month-Wise Report")
+            st.subheader("🛒 Purchase Department Month-Wise Report & KPIs")
             selected_month = st.selectbox("Select Month for Purchase Report", months_list, index=9)
-            st.write(f"Supplier OTD and procurement cost savings for **{selected_month} 2026**.")
-            st.line_chart(pd.DataFrame({"Supplier OTD %": [92, 93, 94, 95]}))
+            
+            col_p1, col_p2, col_p3, col_p4 = st.columns(4)
+            with col_p1:
+                st.metric("Total Purchase Value", "₹ 2.10 Cr", "4% vs last month")
+            with col_p2:
+                st.metric("Supplier OTD %", "95.2%", "2.1% ↑")
+            with col_p3:
+                st.metric("Cost Savings", "₹ 8.5 Lakhs", "Target Achieved")
+            with col_p4:
+                st.metric("PR-to-PO Lead Time", "1.5 Days", "Fast")
+
+            st.write(f"Comprehensive procurement performance and supplier evaluation summary for **{selected_month} 2026**.")
+            st.dataframe(pd.DataFrame({
+                "Procurement Activity / Report": ["PR Verification & Prioritization", "RFQ & Comparative Statement Evaluation", "PO Generation & Supplier Follow-up", "Gate Inward & GRN Coordination", "Supplier Rejection & Replacement Tracking", "PO-GRN-Invoice Matching & Accounts Handover", "Monthly Supplier Rating & Cost Analysis"],
+                f"{selected_month} Status": ["Completed", "Evaluated", "Issued", "Coordinated", "Resolved", "Matched", "Published"]
+            }), use_container_width=True)
+            st.line_chart(pd.DataFrame({"Supplier OTD %": [92, 93, 94, 95.2]}))
 
     # 6. CORE DEPARTMENT
     elif "Core" in current_dept:
