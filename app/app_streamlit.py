@@ -8,41 +8,60 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS for Professional Enterprise Dashboard Styling
+# Custom CSS for Professional White & Faint Blue Enterprise Dashboard Styling
 st.markdown("""
     <style>
+    /* Global App Background & Font */
+    .stApp {
+        background-color: #f8fafc;
+        color: #1e293b;
+    }
+    
+    /* Top Enterprise Header */
     .main-header {
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-        padding: 20px;
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+        padding: 22px;
         border-radius: 12px;
         color: white;
         margin-bottom: 20px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
+    
+    /* End-to-End Process Flow Bar */
     .flow-bar {
-        background-color: #334155;
+        background-color: #e0f2fe;
+        border: 1px solid #bae6fd;
         padding: 10px;
         border-radius: 8px;
         text-align: center;
         font-weight: 600;
-        color: #f1f5f9;
+        color: #0369a1;
         font-size: 0.85rem;
     }
+    
+    /* Professional Department Cards (White & Faint Blue Theme) */
     .dept-card {
-        background-color: #1e293b;
+        background-color: #ffffff;
         border-radius: 10px;
         padding: 18px;
-        border-top: 5px solid #3b82f6;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        border: 1px solid #e2e8f0;
+        border-top: 5px solid #0284c7;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         margin-bottom: 20px;
-        color: #f8fafc;
+        color: #1e293b;
         min-height: 290px;
     }
     .card-title {
         font-size: 1.1rem;
         font-weight: 700;
         margin-bottom: 8px;
-        color: #38bdf8;
+        color: #0369a1;
+    }
+    
+    /* Sidebar Styling */
+    section[data-testid="stSidebar"] {
+        background-color: #f1f5f9;
+        border-right: 1px solid #e2e8f0;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -53,16 +72,16 @@ st.markdown("""
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
                 <h2>🏭 SANYOG FOUNDRY OPERATIONS MASTER DASHBOARD</h2>
-                <p style="color: #94a3b8; margin: 0;">Quality Castings | On-Time Delivery | Role-Based Access & Enterprise ERP</p>
+                <p style="color: #e0f2fe; margin: 0;">Quality Castings | On-Time Delivery | Professional Enterprise ERP</p>
             </div>
             <div style="display: flex; gap: 15px;">
-                <div style="background: #334155; padding: 8px 15px; border-radius: 8px; font-size: 0.9rem;">
+                <div style="background: rgba(255,255,255,0.15); padding: 8px 15px; border-radius: 8px; font-size: 0.9rem;">
                     📅 <strong>Date:</strong> 09 Oct 2026
                 </div>
-                <div style="background: #065f46; padding: 8px 15px; border-radius: 8px; font-size: 0.9rem;">
+                <div style="background: #059669; padding: 8px 15px; border-radius: 8px; font-size: 0.9rem; color: white;">
                     🟢 <strong>Plant Status:</strong> Running
                 </div>
-                <div style="background: #1e3a8a; padding: 8px 15px; border-radius: 8px; font-size: 0.9rem;">
+                <div style="background: rgba(255,255,255,0.15); padding: 8px 15px; border-radius: 8px; font-size: 0.9rem;">
                     🎯 <strong>Overall OEE:</strong> 78.5%
                 </div>
             </div>
@@ -110,28 +129,31 @@ if current_selection not in view_options:
     
 currentIndex = view_options.index(current_selection)
 
-# Sidebar Navigation
+# Sidebar Navigation (Instant Response Selectbox)
 st.sidebar.title("🎛️ Navigation & Control")
-selected_view = st.sidebar.radio("Select View / Department", view_options, index=currentIndex)
-st.session_state.selected_dept = selected_view
+selected_view = st.sidebar.selectbox("Select View / Department", view_options, index=currentIndex)
+
+if selected_view != st.session_state.selected_dept:
+    st.session_state.selected_dept = selected_view
+    st.rerun()
 
 if st.session_state.selected_dept == "Operations Master Dashboard":
     
     departments = [
-        {"name": "📦 Store Department", "color": "#f97316", "access": "Create/Edit Stock Entries, View PO & GRN", "auth": "Physical verification nantar receipt/issue नोंद करणे.", "kpi": "Inventory Accuracy: 98%"},
-        {"name": "🔧 Maintenance Department", "color": "#0ea5e9", "access": "Create/Edit PM & Breakdown Logs", "auth": "Authorized maintenance & safe restart confirmation.", "kpi": "Machine Availability: 95%"},
-        {"name": "🚚 Dispatch Department", "color": "#22c55e", "access": "Create DC, Packing list, View Sales Order", "auth": "Quality clearance & authorized documents nantar dispatch.", "kpi": "On-Time Delivery: 98%"},
-        {"name": "📊 Accounts Department", "color": "#a855f7", "access": "View PO, GRN, SO, Invoices, Ledgers", "auth": "Payment/billing approval workflow nustar entries.", "kpi": "Financial Accuracy: 99%"},
-        {"name": "🛒 Purchase Department", "color": "#6366f1", "access": "Create PR/PO, View Store Stock", "auth": "PO approval delegation nustar issue karne.", "kpi": "Supplier OTD: 95%"},
-        {"name": "🛡️ Core Department", "color": "#14b8a6", "access": "Create Core Output, View Production Plan", "auth": "Approved recipe nusar core closure.", "kpi": "Core Rejection: < 3%"},
-        {"name": "⚙️ Fettling Department", "color": "#eab308", "access": "Create Output/Rework, View Job Card", "auth": "Operation completion; final quality release nahi.", "kpi": "Finishing Rejection: < 2%"},
-        {"name": "🔬 Quality Department", "color": "#8b5cf6", "access": "Create Inspection/NCR, Hold/Release", "auth": "Quality hold/release niyamanusar final clearance.", "kpi": "First Pass Yield: 96.5%"},
-        {"name": "🏭 Production Department", "color": "#3b82f6", "access": "Create Plan/Output, View Lab/Quality", "auth": "Production completion; quality release nahi.", "kpi": "Target Achievement: 96%"},
-        {"name": "💡 Development Department", "color": "#06b6d4", "access": "Create Feasibility/Trials, View Reports", "auth": "Engineering change sathi designated approval.", "kpi": "First Trial Success: 88%"},
-        {"name": "🧪 Laboratory Department", "color": "#1e40af", "access": "Create Test Results, View Heat/Specs", "auth": "Test report jari karne; commercial approval nahi.", "kpi": "Testing Accuracy: 99.5%"},
-        {"name": "🤝 Sales Department", "color": "#be185d", "access": "Create Quotations/SOs, View Dispatch/Accounts", "auth": "Delegated limit madhe quotation / order coordination.", "kpi": "Order Booking: ₹ 4.5 Cr"},
-        {"name": "👔 Plant Head Portal", "color": "#10b981", "access": "View All Plant Reports & Department Records", "auth": "Delegated operational approvals & escalation.", "kpi": "Plant OEE: 78.5%"},
-        {"name": "👑 Company Head / Management", "color": "#f43f5e", "access": "View All Consolidated Financials & KPIs", "auth": "Company policy, budget & major investments.", "kpi": "Monthly Revenue: ₹ 4.15 Cr"}
+        {"name": "📦 Store Department", "color": "#0284c7", "access": "Create/Edit Stock Entries, View PO & GRN", "auth": "Physical verification nantar receipt/issue नोंद करणे.", "kpi": "Inventory Accuracy: 98%"},
+        {"name": "🔧 Maintenance Department", "color": "#0284c7", "access": "Create/Edit PM & Breakdown Logs", "auth": "Authorized maintenance & safe restart confirmation.", "kpi": "Machine Availability: 95%"},
+        {"name": "🚚 Dispatch Department", "color": "#0284c7", "access": "Create DC, Packing list, View Sales Order", "auth": "Quality clearance & authorized documents nantar dispatch.", "kpi": "On-Time Delivery: 98%"},
+        {"name": "📊 Accounts Department", "color": "#0284c7", "access": "View PO, GRN, SO, Invoices, Ledgers", "auth": "Payment/billing approval workflow nustar entries.", "kpi": "Financial Accuracy: 99%"},
+        {"name": "🛒 Purchase Department", "color": "#0284c7", "access": "Create PR/PO, View Store Stock", "auth": "PO approval delegation nustar issue karne.", "kpi": "Supplier OTD: 95%"},
+        {"name": "🛡️ Core Department", "color": "#0284c7", "access": "Create Core Output, View Production Plan", "auth": "Approved recipe nusar core closure.", "kpi": "Core Rejection: < 3%"},
+        {"name": "⚙️ Fettling Department", "color": "#0284c7", "access": "Create Output/Rework, View Job Card", "auth": "Operation completion; final quality release nahi.", "kpi": "Finishing Rejection: < 2%"},
+        {"name": "🔬 Quality Department", "color": "#0284c7", "access": "Create Inspection/NCR, Hold/Release", "auth": "Quality hold/release niyamanusar final clearance.", "kpi": "First Pass Yield: 96.5%"},
+        {"name": "🏭 Production Department", "color": "#0284c7", "access": "Create Plan/Output, View Lab/Quality", "auth": "Production completion; quality release nahi.", "kpi": "Target Achievement: 96%"},
+        {"name": "💡 Development Department", "color": "#0284c7", "access": "Create Feasibility/Trials, View Reports", "auth": "Engineering change sathi designated approval.", "kpi": "First Trial Success: 88%"},
+        {"name": "🧪 Laboratory Department", "color": "#0284c7", "access": "Create Test Results, View Heat/Specs", "auth": "Test report jari karne; commercial approval nahi.", "kpi": "Testing Accuracy: 99.5%"},
+        {"name": "🤝 Sales Department", "color": "#0284c7", "access": "Create Quotations/SOs, View Dispatch/Accounts", "auth": "Delegated limit madhe quotation / order coordination.", "kpi": "Order Booking: ₹ 4.5 Cr"},
+        {"name": "👔 Plant Head Portal", "color": "#059669", "access": "View All Plant Reports & Department Records", "auth": "Delegated operational approvals & escalation.", "kpi": "Plant OEE: 78.5%"},
+        {"name": "👑 Company Head / Management", "color": "#0369a1", "access": "View All Consolidated Financials & KPIs", "auth": "Company policy, budget & major investments.", "kpi": "Monthly Revenue: ₹ 4.15 Cr"}
     ]
 
     # Grid Display (3 columns per row)
@@ -142,12 +164,12 @@ if st.session_state.selected_dept == "Operations Master Dashboard":
                 dept = departments[i + j]
                 with cols[j]:
                     st.markdown(f"""
-                        <div class="dept-card" style="border-top-color: {dept['color']};">
+                        <div class="dept-card">
                             <div class="card-title">{dept['name']}</div>
-                            <hr style="margin: 4px 0 8px 0; border-color: #334155;">
-                            <p style="font-size: 0.82rem; color: #cbd5e1; margin-bottom: 6px;"><strong>Access Rights:</strong><br>{dept['access']}</p>
-                            <p style="font-size: 0.82rem; color: #cbd5e1; margin-bottom: 8px;"><strong>Authority:</strong><br>{dept['auth']}</p>
-                            <div style="background: rgba(15, 23, 42, 0.6); padding: 8px; border-radius: 6px; font-size: 0.82rem; border-left: 3px solid {dept['color']};">
+                            <hr style="margin: 4px 0 8px 0; border-color: #e2e8f0;">
+                            <p style="font-size: 0.82rem; color: #475569; margin-bottom: 6px;"><strong>Access Rights:</strong><br>{dept['access']}</p>
+                            <p style="font-size: 0.82rem; color: #475569; margin-bottom: 8px;"><strong>Authority:</strong><br>{dept['auth']}</p>
+                            <div style="background: #f0f9ff; padding: 8px; border-radius: 6px; font-size: 0.82rem; border-left: 3px solid #0284c7; color: #0369a1;">
                                 <strong>Key KPI:</strong> {dept['kpi']}
                             </div>
                         </div>
@@ -186,11 +208,8 @@ elif st.session_state.selected_dept == "🔐 Access & Authority Matrix":
         "Approval Authority / Limit": ["Delegated Limit Quotation", "Designated Engineering Change", "PO Approval Delegation", "Physical Verification Receipt", "Production Completion", "Core Job Closure", "Operation Completion", "Quality Hold / Release", "Test Report Release", "Work Order Closure", "Dispatch Document Release", "Payment/Billing Workflow", "Operational Escalations & Actions", "Budget, Capex & Major Contracts"]
     })
     st.dataframe(matrix_df, use_container_width=True)
-    
-    st.info("💡 **3 Critical Controls:** 1. **Purchase:** PR creator, PO approver, and Payment approver must be different. 2. **Quality:** Production cannot give final quality release. 3. **Accounts:** Invoice and payment authorization require 3-way matching (PO + GRN + Invoice).")
 
 else:
-    # Specific Department Management Portal
     current_dept = st.session_state.selected_dept
     st.title(f"🛠️ {current_dept} Management Portal")
     st.write(f"Complete operational workspace, access controls, and specialized records for **{current_dept}**.")
