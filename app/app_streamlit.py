@@ -128,9 +128,9 @@ if st.session_state.selected_dept == "Operations Master Dashboard":
         {"name": "🏭 Production Department", "color": "#3b82f6", "work": "• Production planning, manpower & machine utilization\n• Process control, productivity & safe efficient production", "kpi": "Target Achievement: 96%\nOEE: 78.5%"},
         {"name": "💡 Development Department", "color": "#06b6d4", "work": "• New casting/product, process & pattern/core development\n• Trial casting, process optimization & successful transfer to production", "kpi": "First Trial Success: 88%\nOn-Time Dev: 95%"},
         {"name": "🧪 Laboratory Department", "color": "#1e40af", "work": "• Chemical analysis, spectrometer, sand, hardness & microstructure tests\n• Maintaining test reports & material/process traceability", "kpi": "Testing Accuracy: 99.5%\nAvg TAT: < 2 Hrs"},
-        {"name": "🤝 Sales Department", "color": "#be185d", "work": "• Customer requirements, enquiry handling, quotation & order follow-up\n• Customer communication, sales planning & business development", "kpi": "Order Growth: 10%\nEnquiry Conversion: 25%"},
+        {"name": "🤝 Sales Department", "color": "#be185d", "work": "• Customer requirements, enquiry handling, quotation & order follow-up\n• Customer communication, sales planning & business development", "kpi": "Order Booking: ₹ 4.5 Cr\nEnquiry Conversion: 28%"},
         {"name": "👔 Plant Head Portal", "color": "#10b981", "work": "• Plant-level coordination & monitoring of Production, Quality, Maintenance & Safety\n• Improving productivity, quality, delivery & profitability", "kpi": "Plant OEE: 78.5%\nPlant Safety: 100%"},
-        {"name": "👑 Company Head / Management", "color": "#f43f5e", "work": "• Business strategy, financial planning, investment & policy making\n• Leadership, overall performance & long-term growth & profitability", "kpi": "Revenue Growth: 12%\nProfitability: 8%"}
+        {"name": "👑 Company Head / Management", "color": "#f43f5e", "work": "• Business strategy, financial planning, investment & policy making\n• Leadership, overall performance & long-term growth & profitability", "kpi": "Monthly Revenue: ₹ 4.15 Cr\nNet Profit: 14.2%"}
     ]
 
     # Grid Display (3 columns per row)
@@ -166,7 +166,7 @@ if st.session_state.selected_dept == "Operations Master Dashboard":
     with b_cols[2]:
         st.metric(label="On-Time Delivery", value="98%", delta="3% vs last month")
     with b_cols[3]:
-        st.metric(label="Customer PPM", value="380 PPM", delta="-120 PPM")
+        st.metric(label="Monthly Revenue", value="₹ 4.15 Cr", delta="12% YoY")
 
 else:
     # Specific Department Management Portal
@@ -674,7 +674,7 @@ else:
             st.dataframe(daily_report_df, use_container_width=True)
             st.bar_chart(pd.DataFrame({"Daily Production Tonnage": [34, 35.5, 29.5]}))
 
-    # 10. DEVELOPMENT DEPARTMENT (Updated with professional foundry working, trial tracking, pattern/tooling, ECN & handover)
+    # 10. DEVELOPMENT DEPARTMENT
     elif "Development" in current_dept:
         with tab1:
             st.subheader("💡 New Product Development & Trial Casting Register")
@@ -729,7 +729,7 @@ else:
             }), use_container_width=True)
             st.line_chart(pd.DataFrame({"First Trial Success %": [80, 83, 85, 88]}))
 
-    # 11. LABORATORY DEPARTMENT (Updated with professional foundry working, spectrometer, sand testing, heat numbers, TAT & calibration)
+    # 11. LABORATORY DEPARTMENT
     elif "Laboratory" in current_dept:
         with tab1:
             st.subheader("🧪 Laboratory Test Register, Spectrometer & Sand Testing Log")
@@ -783,46 +783,160 @@ else:
             }), use_container_width=True)
             st.line_chart(pd.DataFrame({"Lab Testing Accuracy %": [98.5, 99.0, 99.2, 99.5]}))
 
-    # 12. SALES DEPARTMENT
+    # 12. SALES DEPARTMENT (Updated with professional foundry working, customer enquiry, PO, quotation, sales order & tracking)
     elif "Sales" in current_dept:
         with tab1:
-            st.subheader("Customer Inquiries, Quotations & Orders")
-            st.dataframe(pd.DataFrame({"Client": ["Bharat Forge", "Endurance"], "Item": ["Bracket", "Cylinder Block"], "Value (₹)": [1200000, 3500000], "Status": ["Quotation Sent", "Confirmed"]}), use_container_width=True)
+            st.subheader("🤝 Sales Pipeline, Customer Orders & Enquiry Register")
+            st.dataframe(pd.DataFrame({
+                "Enquiry / SO ID": ["SO-2026-301", "SO-2026-302", "ENQ-2026-103"],
+                "Customer Name": ["Tata Motors", "Kirloskar Brothers", "Bharat Forge"],
+                "Part Name / Grade": ["Housing Cover (FG-260)", "Impeller (FG-300)", "Bracket (SG-400)"],
+                "Order Qty": ["2,500 Pcs", "1,200 Pcs", "800 Pcs"],
+                "Order Value (₹)": ["₹ 35,00,000", "₹ 18,50,000", "₹ 12,00,000"],
+                "Delivery Schedule": ["15-Oct-2026", "22-Oct-2026", "30-Oct-2026"],
+                "Status": ["Confirmed / In Production", "Confirmed / Dispatch Planned", "Quotation Sent"]
+            }), use_container_width=True)
+            st.info("💡 **Traceability Rule:** Customer Enquiry → Technical Feasibility (Dev/Prod) → Costing & Quotation → Quotation Approval → Customer PO & Sales Order → Order Planning → Dispatch Coordination → Invoice & Payment Follow-up.")
         with tab2:
-            st.subheader("New Sales Lead / Inquiry")
-            with st.form("sales_form"):
-                st.text_input("Client Name")
-                st.text_input("Casting Requirement")
-                st.number_input("Estimated Order Value (₹)", 0.0)
-                st.form_submit_button("Save Lead")
+            st.subheader("Customer Enquiry, Quotation & Sales Order Entry Form")
+            with st.form("sales_doc_form"):
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.text_input("Customer Enquiry No. & Customer Name")
+                    st.text_input("Part Name, Number & Material Grade")
+                    st.number_input("Requirement Quantity vs Target Price (₹)", 0.0)
+                    st.text_input("Feasibility & Costing Sheet Reference")
+                    st.text_input("Quotation No. & Approved Selling Rate (₹)")
+                    st.text_input("Customer Purchase Order (PO) No. & Date")
+                with col2:
+                    st.text_input("Sales Order (SO) Reference No.")
+                    st.date_input("Committed Delivery Schedule Date")
+                    st.number_input("Total Order Value (₹)", 0.0)
+                    st.selectbox("Payment Terms & Credit Period", ["30 Days Credit", "45 Days Credit", "Advance / LC", "Against Delivery (COD)"])
+                    st.text_input("Dispatch Plan & Accounts Billing Ref")
+                    st.selectbox("Sales & Order Status", ["Enquiry Received", "Quotation Sent", "PO Confirmed & SO Issued", "In Production / Dispatch", "Completed & Invoiced"])
+                st.text_area("Customer Special Instructions, Delivery Terms & Remarks")
+                st.form_submit_button("Save Sales Order & Update Pipeline")
         with tab3:
-            st.subheader("🤝 Sales Department Month-Wise Report")
+            st.subheader("🤝 Sales Department Month-Wise Report & KPIs")
             selected_month = st.selectbox("Select Month for Sales Report", months_list, index=9)
-            st.write(f"Order booking, enquiry conversion rate, and business growth for **{selected_month} 2026**.")
-            st.bar_chart(pd.DataFrame({"Order Value (Lakhs ₹)": [42, 47, 51, 55]}))
+            
+            col_s1, col_s2, col_s3, col_s4 = st.columns(4)
+            with col_s1:
+                st.metric("Monthly Sales Value", "₹ 4.15 Cr", "12% vs last month")
+            with col_s2:
+                st.metric("New Order Booking", "₹ 4.50 Cr", "Target Met")
+            with col_s3:
+                st.metric("Enquiry Conversion %", "28.5%", "High")
+            with col_s4:
+                st.metric("On-Time Delivery %", "98.2%", "Excellent")
 
-    # 13. PLANT HEAD PORTAL
+            st.write(f"Comprehensive sales performance, order booking value, customer conversion, and accounts receivable summary for **{selected_month} 2026**.")
+            st.dataframe(pd.DataFrame({
+                "Sales Activity / Report": ["Customer Enquiry & Drawing Review", "Technical Feasibility & Costing Evaluation", "Quotation Approval & Release", "Customer PO & Sales Order Verification", "Order Planning & Production Coordination", "Dispatch & Tax Invoice Coordination", "Customer Payment Follow-up & Outstanding Tracking"],
+                f"{selected_month} Status": ["Reviewed", "Evaluated", "Approved", "Verified", "Coordinated", "Invoiced", "Tracked"]
+            }), use_container_width=True)
+            st.bar_chart(pd.DataFrame({"Monthly Sales Value (Crores ₹)": [3.6, 3.8, 4.0, 4.15]}))
+
+    # 13. PLANT HEAD PORTAL (Updated with professional foundry working, daily review, OEE, yields, safety & departmental KPIs)
     elif "Plant Head" in current_dept:
-        st.subheader("👔 Plant Head Month-Wise Executive Report")
-        selected_month = st.selectbox("Select Month for Plant Report", months_list, index=9)
-        st.write(f"Comprehensive plant-level coordination, efficiency, and safety review for **{selected_month} 2026**.")
-        st.dataframe(pd.DataFrame({
-            "Department": ["Production", "Quality", "Maintenance", "Store", "Dispatch"],
-            "Monthly Efficiency %": [95, 98, 96, 94, 98],
-            "Safety Incidents": [0, 0, 0, 0, 0]
-        }), use_container_width=True)
-        st.line_chart(pd.DataFrame({"Plant Efficiency %": [91, 93, 94, 95.5]}))
+        with tab1:
+            st.subheader("👔 Plant Head Operational Control & Daily Review Register")
+            st.dataframe(pd.DataFrame({
+                "Metric Category": ["Production & Output", "Quality & Rejection", "Machine Availability", "Safety & Compliance", "Dispatch Commitment"],
+                "Daily Target": ["40 MT / Day", "Rejection < 2%", "Availability > 95%", "100% Safe Shift", "35 MT / Day"],
+                "Today's Actual": ["39.5 MT", "1.8%", "95.5%", "Zero Incidents", "36.0 MT"],
+                "Status": ["On Track", "Controlled", "Optimal", "Compliant", "Achieved"]
+            }), use_container_width=True)
+            st.info("💡 **Plant Governance:** Daily Review Meeting → Production Planning Review → Quality & Rejection Analysis → Maintenance & Safety Audit → Material Shortage Escalation → Departmental Bottleneck Resolution → Shift Monitoring.")
+        with tab2:
+            st.subheader("Plant Head Operational Review & Escalation Entry Form")
+            with st.form("plant_head_doc_form"):
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.date_input("Plant Review Date")
+                    st.number_input("Total Actual Production (MT) vs Target (MT)", 0.0)
+                    st.number_input("Overall Plant OEE (%)", 0.0, 100.0, 78.5)
+                    st.number_input("Internal Rejection Rate (%)", 0.0, 100.0, 1.8)
+                    st.number_input("Metal Yield %", 0.0, 100.0, 72.5)
+                    st.text_input("Total Machine Breakdown Hours & Root Cause")
+                with col2:
+                    st.number_input("Preventive Maintenance Compliance (%)", 0.0, 100.0, 98.0)
+                    st.text_input("Material Shortage / Purchase Escalations")
+                    st.text_input("Safety Incidents / Near Miss Count (Target: Zero)")
+                    st.number_input("Total Dispatched Tonnage (MT)", 0.0)
+                    st.selectbox("Plant Operational Status", ["Normal & Smooth Operations", "Minor Bottleneck Resolved", "Critical Escalation to Management", "Shift Handover Completed"])
+                    st.text_input("Plant Head Sign-off & Reviewer Name")
+                st.text_area("Plant Head Daily Observations, Corrective Actions & Strategic Instructions")
+                st.form_submit_button("Save Plant Head Review & Operational Log")
+        with tab3:
+            st.subheader("👔 Plant Head Month-Wise Executive Report & Plant KPIs")
+            selected_month = st.selectbox("Select Month for Plant Report", months_list, index=9)
+            
+            col_ph1, col_ph2, col_ph3, col_ph4 = st.columns(4)
+            with col_ph1:
+                st.metric("Plant OEE", "78.5%", "1.8% ↑")
+            with col_ph2:
+                st.metric("Rejection Rate", "1.8%", "-0.5% improvement")
+            with col_ph3:
+                st.metric("Machine Availability", "95.5%", "Optimal")
+            with col_ph4:
+                st.metric("Safety Compliance", "100%", "Zero Incident")
 
-    # 14. COMPANY HEAD / MANAGEMENT
+            st.write(f"Comprehensive plant-level performance review, departmental coordination summary, and operational efficiency for **{selected_month} 2026**.")
+            st.dataframe(pd.DataFrame({
+                "Plant Department / Report": ["Production Department Output & Yield", "Quality Department Rejection & FPY", "Maintenance Department Availability & PM", "Store & Purchase Material Availability", "Dispatch Department OTD & Tonnage", "Safety, Environment & Statutory Compliance", "Plant Head Daily Review & Action Tracking"],
+                f"{selected_month} Status": ["Achieved", "Controlled", "Compliant", "Available", "Dispatched", "100% Safe", "Tracked"]
+            }), use_container_width=True)
+            st.line_chart(pd.DataFrame({"Plant OEE %": [75.0, 76.5, 77.8, 78.5]}))
+
+    # 14. COMPANY HEAD / MANAGEMENT (Updated with professional foundry working, P&L, cash flow, order book, COPQ & management review)
     elif "Company Head" in current_dept:
-        st.subheader("👑 Management Month-Wise Financial & Growth Report")
-        selected_month = st.selectbox("Select Month for Management Report", months_list, index=9)
-        st.write(f"Executive business performance, profitability, and revenue summary for **{selected_month} 2026**.")
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("Monthly Revenue", "₹ 4.15 Crores", "12% YoY")
-        with col2:
-            st.metric("Net Profitability", "14.2%", "1.5% YoY")
-        with col3:
-            st.metric("Overall OEE", "78.5%", "2.1% ↑")
-        st.bar_chart(pd.DataFrame({"Revenue (Crores ₹)": [3.5, 3.8, 4.0, 4.15]}))
+        with tab1:
+            st.subheader("👑 Management Executive Dashboard & Business Performance Register")
+            st.dataframe(pd.DataFrame({
+                "Business Parameter": ["Monthly Revenue", "Operating Profit Margin", "Order Book Value", "Customer Receivables", "Plant OEE & Yield", "Safety & Compliance"],
+                "Current Month Value": ["₹ 4.15 Crores", "14.2%", "₹ 14.50 Crores", "₹ 2.45 Crores", "78.5% OEE | 72.5% Yield", "100% Compliant"],
+                "Target / Budget": ["₹ 4.00 Crores", "14.0%", "₹ 12.00 Crores", "< ₹ 2.50 Crores", "> 78% OEE | > 72% Yield", "Zero Incident"],
+                "Performance Status": ["Exceeded", "Achieved", "Strong", "Controlled", "Optimal", "Compliant"]
+            }), use_container_width=True)
+            st.info("💡 **Strategic Governance:** Business Planning → Financial Performance Review (P&L & Cash Flow) → Customer & Market Development → Plant Performance Review → Investment & CapEx Decisions → Risk & Compliance → Monthly Management Review (MMR).")
+        with tab2:
+            st.subheader("Management Review, Strategic Decision & CapEx Entry Form")
+            with st.form("company_head_doc_form"):
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.date_input("Management Review Date")
+                    st.number_input("Monthly Revenue (Crores ₹) vs Budget (₹)", 0.0, format="%.2f")
+                    st.number_input("Operating Profit / Margin (%)", 0.0, 100.0, 14.2)
+                    st.number_input("Confirmed Order Book Value (Crores ₹)", 0.0, format="%.2f")
+                    st.number_input("Customer Outstanding / Receivables (Crores ₹)", 0.0, format="%.2f")
+                    st.text_input("Cash Flow & Working Capital Status Ref")
+                with col2:
+                    st.number_input("COPQ (Cost of Poor Quality) & Rejection Impact (₹)", 0.0)
+                    st.text_input("Capital Expenditure (CapEx) / Machinery Investment Ref")
+                    st.text_input("New Customer / Market Development Status")
+                    st.selectbox("Strategic Business Health Status", ["High Growth & Profitable", "Stable & On Budget", "Requires Cost Optimization", "Expansion Phase Active"])
+                    st.text_input("Managing Director / Company Head Sign-off")
+                st.text_area("Management Strategic Decisions, Board Directives & Action Owners")
+                st.form_submit_button("Save Management Review & Strategic Record")
+        with tab3:
+            st.subheader("👑 Management Month-Wise Financial & Growth Report")
+            selected_month = st.selectbox("Select Month for Management Report", months_list, index=9)
+            
+            col_ch1, col_ch2, col_ch3, col_ch4 = st.columns(4)
+            with col_ch1:
+                st.metric("Monthly Revenue", "₹ 4.15 Cr", "12% YoY")
+            with col_ch2:
+                st.metric("Operating Profit", "14.2%", "0.8% ↑")
+            with col_ch3:
+                st.metric("Order Book", "₹ 14.5 Cr", "Robust")
+            with col_ch4:
+                st.metric("Overall OEE", "78.5%", "2.1% ↑")
+
+            st.write(f"Executive business performance, financial profitability, order book strength, and long-term growth summary for **{selected_month} 2026**.")
+            st.dataframe(pd.DataFrame({
+                "Strategic Domain / Report": ["Annual Sales & Revenue Growth Review", "Profit & Loss (P&L) & Operating Margin", "Cash Flow & Working Capital Management", "Customer Outstanding & Receivable Risk", "Plant Performance & OEE Review", "Quality, COPQ & Rejection Cost Analysis", "Capital Expenditure & Strategic Investments"],
+                f"{selected_month} Status": ["Achieved", "Profitable", "Healthy", "Controlled", "Optimized", "Minimized", "Approved"]
+            }), use_container_width=True)
+            st.bar_chart(pd.DataFrame({"Monthly Revenue (Crores ₹)": [3.6, 3.8, 4.0, 4.15]}))
