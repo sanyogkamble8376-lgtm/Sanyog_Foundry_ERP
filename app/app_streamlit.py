@@ -126,8 +126,8 @@ if st.session_state.selected_dept == "Operations Master Dashboard":
         {"name": "⚙️ Fettling Department", "color": "#eab308", "work": "• Sand removal, runner/riser removal, shot blasting & grinding\n• Dressing and finishing castings for inspection/dispatch", "kpi": "Finishing Rejection: < 2%\nProductivity: 10% ↑"},
         {"name": "🔬 Quality Department", "color": "#8b5cf6", "work": "• Incoming to final casting quality planning, inspection & process control\n• Defect analysis, CAPA & customer complaint reduction", "kpi": "First Pass Yield: 96.5%\nCustomer PPM: < 380"},
         {"name": "🏭 Production Department", "color": "#3b82f6", "work": "• Production planning, manpower & machine utilization\n• Process control, productivity & safe efficient production", "kpi": "Target Achievement: 96%\nOEE: 78.5%"},
-        {"name": "💡 Development Department", "color": "#06b6d4", "work": "• New casting/product, process & pattern/core development\n• Trial casting, process optimization & successful transfer to production", "kpi": "Lead Time: -20%\nTrial Success: 90%"},
-        {"name": "🧪 Laboratory Department", "color": "#1e40af", "work": "• Chemical analysis, spectrometer, sand, hardness & microstructure tests\n• Maintaining test reports & material/process traceability", "kpi": "Testing Accuracy: 99%\nTurnaround Time: < 24 hrs"},
+        {"name": "💡 Development Department", "color": "#06b6d4", "work": "• New casting/product, process & pattern/core development\n• Trial casting, process optimization & successful transfer to production", "kpi": "First Trial Success: 88%\nOn-Time Dev: 95%"},
+        {"name": "🧪 Laboratory Department", "color": "#1e40af", "work": "• Chemical analysis, spectrometer, sand, hardness & microstructure tests\n• Maintaining test reports & material/process traceability", "kpi": "Testing Accuracy: 99.5%\nAvg TAT: < 2 Hrs"},
         {"name": "🤝 Sales Department", "color": "#be185d", "work": "• Customer requirements, enquiry handling, quotation & order follow-up\n• Customer communication, sales planning & business development", "kpi": "Order Growth: 10%\nEnquiry Conversion: 25%"},
         {"name": "👔 Plant Head Portal", "color": "#10b981", "work": "• Plant-level coordination & monitoring of Production, Quality, Maintenance & Safety\n• Improving productivity, quality, delivery & profitability", "kpi": "Plant OEE: 78.5%\nPlant Safety: 100%"},
         {"name": "👑 Company Head / Management", "color": "#f43f5e", "work": "• Business strategy, financial planning, investment & policy making\n• Leadership, overall performance & long-term growth & profitability", "kpi": "Revenue Growth: 12%\nProfitability: 8%"}
@@ -178,7 +178,7 @@ else:
         st.session_state.selected_dept = "Operations Master Dashboard"
         st.rerun()
         
-    tab1, tab2, tab3 = st.tabs(["Active Records & Tracking", "Add New Entry / Form", "Month-Wise Reports & Daily Summary"])
+    tab1, tab2, tab3 = st.tabs(["Active Records & Tracking", "Add New Entry / Form", "Month-Wise Reports & KPIs"])
     
     # Common Month Selector for Reports Tab
     months_list = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
@@ -553,7 +553,7 @@ else:
             }), use_container_width=True)
             st.line_chart(pd.DataFrame({"Fettling Output (MT/Day)": [22, 24, 25, 26.5]}))
 
-    # 8. QUALITY DEPARTMENT (Updated with professional foundry working, incoming, process, lab testing, NCR, CAPA & KPIs)
+    # 8. QUALITY DEPARTMENT
     elif "Quality" in current_dept:
         with tab1:
             st.subheader("🔬 Quality Assurance, Inspection & Defect Register")
@@ -608,7 +608,7 @@ else:
             }), use_container_width=True)
             st.line_chart(pd.DataFrame({"First Pass Yield %": [94.0, 95.2, 96.0, 96.5]}))
 
-    # 9. PRODUCTION DEPARTMENT (Updated with professional foundry working, planning, melting, pouring, shakeout, OEE & Daily Report Format)
+    # 9. PRODUCTION DEPARTMENT
     elif "Production" in current_dept:
         tab_p1, tab_p2, tab_p3 = st.tabs(["Active Records & Tracking", "Add New Entry / Form", "Month-Wise Reports & Daily Department Report"])
         
@@ -674,41 +674,114 @@ else:
             st.dataframe(daily_report_df, use_container_width=True)
             st.bar_chart(pd.DataFrame({"Daily Production Tonnage": [34, 35.5, 29.5]}))
 
-    # 10. DEVELOPMENT DEPARTMENT
+    # 10. DEVELOPMENT DEPARTMENT (Updated with professional foundry working, trial tracking, pattern/tooling, ECN & handover)
     elif "Development" in current_dept:
         with tab1:
-            st.subheader("New Product Trials & Pattern Development")
-            st.dataframe(pd.DataFrame({"Pattern ID": ["PAT-301", "PAT-302"], "Component": ["Motor Body", "Impeller"], "Stage": ["Trial Casting", "Pattern Mod"], "Status": ["Approved", "In Progress"]}), use_container_width=True)
+            st.subheader("💡 New Product Development & Trial Casting Register")
+            st.dataframe(pd.DataFrame({
+                "Dev ID": ["DEV-2026-01", "DEV-2026-02", "DEV-2026-03"],
+                "Customer / Part Name": ["Tata Motors / Housing Cover", "Kirloskar / Impeller", "Bharat Forge / Bracket"],
+                "Material Grade": ["FG-260", "FG-300", "SG-400"],
+                "Pattern / Tooling ID": ["PAT-101", "PAT-102", "PAT-103"],
+                "Development Stage": ["Trial Casting", "Customer Sample Approval", "Production Handover"],
+                "Trial Success": ["Success", "Pending Approval", "Completed"],
+                "Status": ["In Progress", "Submitted", "Handed Over"]
+            }), use_container_width=True)
+            st.info("💡 **Traceability Rule:** Customer Drawing / 3D Model → Feasibility Report → Tooling/Pattern ID → Trial Casting → Lab/Quality Testing → RCA & Defect Correction → Customer Sample Approval → Production Handover.")
         with tab2:
-            st.subheader("Log Trial Development")
-            with st.form("dev_form"):
-                st.text_input("Component Name")
-                st.selectbox("Development Stage", ["Pattern Design", "Trial Casting", "Dimensional Audit", "Client Approval"])
-                st.form_submit_button("Save Development Entry")
+            st.subheader("New Product Development, Trial & Handover Entry Form")
+            with st.form("development_doc_form"):
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.text_input("Development Project ID & Customer Name")
+                    st.text_input("Component Part Name, No. & Material Grade")
+                    st.text_input("Customer Drawing No. & Revision / ECN Ref")
+                    st.text_input("Pattern / Core Box ID & Tooling Reference")
+                    st.selectbox("Development Stage", ["Technical Feasibility & Cost Estimation", "Pattern & Tooling Development", "Trial Casting & Pouring", "Lab & Quality Testing", "Customer Sample Approval", "Production Handover"])
+                    st.number_input("Trial Planned Qty vs Actual Trial Produced Qty", 0)
+                with col2:
+                    st.selectbox("Trial Result Status", ["First Trial Success (OK)", "Trial Defect - RCA Required", "Sample Submitted to Customer", "Customer Approved", "Production Handover Done"])
+                    st.text_input("Dimensional & Metallurgical Report Ref")
+                    st.text_input("Defect Analysis / RCA Ref (if trial failed)")
+                    st.text_input("Sample Approval Report Ref")
+                    st.text_input("Production Handover Checklist Ref")
+                    st.number_input("Development Lead Time (Days)", 0)
+                st.text_area("Technical Feasibility Notes, Process Parameters & Remarks")
+                st.form_submit_button("Save Development & Trial Record")
         with tab3:
-            st.subheader("💡 Development Department Month-Wise Report")
+            st.subheader("💡 Development Department Month-Wise Report & KPIs")
             selected_month = st.selectbox("Select Month for Development Report", months_list, index=9)
-            st.write(f"New casting trial success rate and lead time analysis for **{selected_month} 2026**.")
-            st.line_chart(pd.DataFrame({"Trial Success %": [82, 85, 88, 90]}))
+            
+            col_dev1, col_dev2, col_dev3, col_dev4 = st.columns(4)
+            with col_dev1:
+                st.metric("First Trial Success %", "88.0%", "5% ↑")
+            with col_dev2:
+                st.metric("On-Time Development %", "95.0%", "Optimal")
+            with col_dev3:
+                st.metric("Sample Approval Rate", "92.0%", "Fast")
+            with col_dev4:
+                st.metric("Handover Completion", "100%", "Completed")
 
-    # 11. LABORATORY DEPARTMENT
+            st.write(f"Comprehensive new product development performance, trial success rate, and lead time tracking for **{selected_month} 2026**.")
+            st.dataframe(pd.DataFrame({
+                "Development Activity / Report": ["Customer Drawing & Feasibility Review", "Tooling & Pattern Development Verification", "Trial Casting, Melting & Pouring Execution", "Lab Chemical & Dimensional Testing Review", "Defect Analysis & RCA Correction", "Customer Sample Submission & Approval", "Production & Quality Handover Completion"],
+                f"{selected_month} Status": ["Reviewed", "Verified", "Executed", "Reviewed", "Resolved", "Approved", "Completed"]
+            }), use_container_width=True)
+            st.line_chart(pd.DataFrame({"First Trial Success %": [80, 83, 85, 88]}))
+
+    # 11. LABORATORY DEPARTMENT (Updated with professional foundry working, spectrometer, sand testing, heat numbers, TAT & calibration)
     elif "Laboratory" in current_dept:
         with tab1:
-            st.subheader("Spectrometer, Sand & Hardness Test Reports")
-            st.dataframe(pd.DataFrame({"Sample Code": ["SMP-01", "SMP-02"], "Carbon %": [3.25, 3.30], "Silicon %": [2.10, 2.05], "Hardness BHN": [210, 215]}), use_container_width=True)
+            st.subheader("🧪 Laboratory Test Register, Spectrometer & Sand Testing Log")
+            st.dataframe(pd.DataFrame({
+                "Sample ID": ["SMP-2026-801", "SMP-2026-802", "SMP-2026-803"],
+                "Heat / Batch No.": ["H-2026-410", "H-2026-411", "SAND-BATCH-52"],
+                "Test Type": ["Chemical Analysis (Spectrometer)", "Hardness Test (BHN)", "Sand Testing (Moisture & Strength)"],
+                "Material Grade": ["FG-260", "SG-400", "Green Sand Mix"],
+                "Key Result": ["C: 3.25% | Si: 2.10% | Mn: 0.75%", "BHN: 215 (Range: 200-230)", "Moisture: 3.8% | Strength: 145 kPa"],
+                "Status": ["Approved", "Approved", "Approved"]
+            }), use_container_width=True)
+            st.info("💡 **Traceability Rule:** Test Request → Sample Collection & Preparation → Spectrometer Chemical Analysis / Sand Testing / Hardness Test → Result Verification → Out-of-Specification Alert / Retest → Lab Test Report linked with Heat Number.")
         with tab2:
-            st.subheader("Add Lab Test Result")
-            with st.form("lab_form"):
-                st.text_input("Sample Code")
-                st.number_input("Carbon %", 0.0, format="%.2f")
-                st.number_input("Silicon %", 0.0, format="%.2f")
-                st.number_input("Hardness BHN", 0.0)
-                st.form_submit_button("Save Lab Report")
+            st.subheader("Lab Test Request, Spectrometer & Sand Testing Entry Form")
+            with st.form("lab_doc_form"):
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.text_input("Sample ID & Heat Number / Batch Record No.")
+                    st.selectbox("Testing Department Source", ["Production Furnace Melting", "Core / Moulding Sand Shop", "Quality Incoming Material", "Development Trial Casting"])
+                    st.selectbox("Test Category", ["Chemical Composition (Spectrometer)", "Carbon / Carbon Equivalent Test", "Sand Testing (Moisture, AFS, Permeability, Strength)", "Hardness Test (BHN / Rockwell)", "Tensile / Mechanical Test", "Microstructure Test"])
+                    st.text_input("Material Grade & Instrument Used")
+                    st.number_input("Carbon % vs Silicon % (if applicable)", 0.0, format="%.2f")
+                    st.number_input("Manganese % vs Sulphur/Phosphorus %", 0.0, format="%.3f")
+                with col2:
+                    st.number_input("Hardness BHN or Green Compression Strength (kPa)", 0.0)
+                    st.number_input("Sand Moisture % or Permeability No.", 0.0)
+                    st.selectbox("Result Status", ["Within Specification (Approved)", "Out-of-Specification (Alerted)", "Retest Required", "Correction Applied"])
+                    st.text_input("Test Turnaround Time (TAT in Minutes)")
+                    st.text_input("Calibration / Reference Standard Ref")
+                    st.text_input("Lab Technician Name & Sign-off")
+                st.text_area("Lab Test Remarks, Retest Reason & Technical Observations")
+                st.form_submit_button("Save Lab Test Report & Link Heat No.")
         with tab3:
-            st.subheader("🧪 Laboratory Department Month-Wise Report")
+            st.subheader("🧪 Laboratory Department Month-Wise Report & KPIs")
             selected_month = st.selectbox("Select Month for Lab Report", months_list, index=9)
-            st.write(f"Testing accuracy and report turnaround time for **{selected_month} 2026**.")
-            st.line_chart(pd.DataFrame({"Testing Accuracy %": [98.5, 99, 99.2, 99.5]}))
+            
+            col_l1, col_l2, col_l3, col_l4 = st.columns(4)
+            with col_l1:
+                st.metric("Testing Accuracy", "99.5%", "0.3% ↑")
+            with col_l2:
+                st.metric("Avg Turnaround Time", "1.8 Hrs", "Fast")
+            with col_l3:
+                st.metric("Calibration Compliance", "100%", "Up to Date")
+            with col_l4:
+                st.metric("Retest Rate", "1.2%", "Very Low")
+
+            st.write(f"Comprehensive laboratory testing performance, spectrometer accuracy, sand test metrics, and calibration summary for **{selected_month} 2026**.")
+            st.dataframe(pd.DataFrame({
+                "Lab Activity / Report": ["Test Request Receipt & Sample Collection", "Spectrometer Chemical Composition Analysis", "Moulding & Core Sand Property Testing", "Hardness & Mechanical Property Testing", "Result Verification & Spec Comparison", "Out-of-Specification Alert & Retest Log", "Instrument Calibration & Maintenance Audit"],
+                f"{selected_month} Status": ["Completed", "Verified", "Tested", "Tested", "Verified", "Tracked", "Audited"]
+            }), use_container_width=True)
+            st.line_chart(pd.DataFrame({"Lab Testing Accuracy %": [98.5, 99.0, 99.2, 99.5]}))
 
     # 12. SALES DEPARTMENT
     elif "Sales" in current_dept:
