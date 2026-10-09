@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS for Professional Pure White, Faint Blue & Dark Blue Theme
+# Custom CSS for Scroll-Free Clean Professional Layout
 st.markdown("""
     <style>
     /* Global Background - Pure White */
@@ -20,29 +20,29 @@ st.markdown("""
     /* Top Enterprise Header - Dark Blue */
     .main-header {
         background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-        padding: 20px 24px;
-        border-radius: 12px;
+        padding: 16px 20px;
+        border-radius: 10px;
         color: white;
-        margin-bottom: 16px;
-        box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15);
+        margin-bottom: 12px;
+        box-shadow: 0 4px 8px rgba(30, 58, 138, 0.1);
     }
     
     /* Department Cards - Clean White with Dark Blue Accent Top */
     .dept-card {
         background-color: #ffffff;
-        border-radius: 10px;
-        padding: 16px;
+        border-radius: 8px;
+        padding: 12px;
         border: 1px solid #e2e8f0;
-        border-top: 5px solid #1e40af;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-        margin-bottom: 16px;
+        border-top: 4px solid #1e40af;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+        margin-bottom: 10px;
         color: #1e293b;
-        min-height: 230px;
+        min-height: 210px;
     }
     .card-title {
-        font-size: 1.05rem;
+        font-size: 0.95rem;
         font-weight: 700;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
         color: #1e3a8a;
     }
     
@@ -53,53 +53,25 @@ st.markdown("""
         border-radius: 6px !important;
         font-weight: 600 !important;
         border: none !important;
-        padding: 8px 14px !important;
+        padding: 6px 10px !important;
         width: 100% !important;
+        font-size: 0.85rem !important;
     }
     .stButton>button:hover {
         background-color: #1e3a8a !important;
         color: white !important;
     }
     
-    /* Red Accent Alert Styling */
-    .alert-box {
-        background-color: #fef2f2;
-        border: 1px solid #fecaca;
-        color: #dc2626;
-        padding: 10px;
-        border-radius: 6px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        margin-bottom: 10px;
-    }
-    
-    /* Form Label & Input Fields Visibility */
-    label, .stTextInput label, .stNumberInput label, .stSelectbox label, .stTextArea label {
-        color: #1e40af !important;
-        font-weight: 700 !important;
-    }
-    .stTextInput input, .stNumberInput input, .stTextArea textarea {
-        background-color: #f8fafc !important;
-        color: #1e293b !important;
-        border: 1px solid #cbd5e1 !important;
-    }
-    
-    /* Tabs Clear Visibility */
-    .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
-        font-size: 1rem !important;
-        font-weight: 700 !important;
-        color: #1e40af !important;
-    }
-    
-    /* Sidebar Styling - Light Clean Gray/Blue */
+    /* Sidebar Navigation Links Styling */
     section[data-testid="stSidebar"] {
         background-color: #f8fafc;
         border-right: 1px solid #e2e8f0;
+        padding-top: 1rem;
     }
     
     /* Compact Layout Padding */
     .block-container {
-        padding-top: 1.5rem !important;
+        padding-top: 1rem !important;
         padding-bottom: 1rem !important;
     }
     </style>
@@ -109,21 +81,21 @@ st.markdown("""
 st.markdown("""
     <div class="main-header">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <div style="font-size: 2.2rem;">🏭</div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="font-size: 1.8rem;">🏭</div>
                 <div>
-                    <h2 style="margin: 0; color: white; font-weight: 800; letter-spacing: 0.5px;">SANYOG FOUNDRY</h2>
-                    <p style="color: #bfdbfe; margin: 0; font-size: 0.9rem; font-weight: 500;">OPERATIONS MASTER DASHBOARD</p>
+                    <h3 style="margin: 0; color: white; font-weight: 800;">SANYOG FOUNDRY</h3>
+                    <p style="color: #bfdbfe; margin: 0; font-size: 0.8rem; font-weight: 500;">OPERATIONS MASTER DASHBOARD</p>
                 </div>
             </div>
-            <div style="display: flex; gap: 15px; align-items: center;">
-                <div style="background: rgba(255,255,255,0.12); padding: 8px 14px; border-radius: 8px; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.2);">
-                    📅 <strong>09 Oct 2026</strong><br><span style="font-size: 0.75rem; color: #bfdbfe;">Thursday</span>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <div style="background: rgba(255,255,255,0.12); padding: 6px 10px; border-radius: 6px; font-size: 0.8rem;">
+                    📅 <strong>09 Oct 2026</strong>
                 </div>
-                <div style="background: rgba(5, 150, 105, 0.25); padding: 10px 16px; border-radius: 8px; font-size: 0.85rem; color: #6ee7b7; border: 1px solid #059669;">
-                    🟢 <strong>Plant Status:</strong> Running
+                <div style="background: rgba(5, 150, 105, 0.25); padding: 6px 10px; border-radius: 6px; font-size: 0.8rem; color: #6ee7b7; border: 1px solid #059669;">
+                    🟢 <strong>Running</strong>
                 </div>
-                <div style="background: rgba(255,255,255,0.12); padding: 10px 16px; border-radius: 8px; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.2);">
+                <div style="background: rgba(255,255,255,0.12); padding: 6px 10px; border-radius: 6px; font-size: 0.8rem;">
                     🎯 <strong>OEE:</strong> 78.5%
                 </div>
             </div>
@@ -135,39 +107,27 @@ st.markdown("""
 if 'selected_dept' not in st.session_state:
     st.session_state.selected_dept = "Dashboard"
 
-view_options = [
-    "Dashboard", 
-    "🔐 Access & Authority Matrix",
-    "Sales",
-    "Development",
-    "Purchase",
-    "Store",
-    "Production", 
-    "Core", 
-    "Fettling", 
-    "Quality", 
-    "Lab",
-    "Maintenance", 
-    "Dispatch", 
-    "Accounts", 
-    "Plant Head",
-    "Company Head"
-]
-
-current_selection = st.session_state.selected_dept
-if current_selection not in view_options:
-    current_selection = "Dashboard"
-    
-currentIndex = view_options.index(current_selection)
-
-# Sidebar Navigation
-st.sidebar.markdown("### 🎛️ Navigation Menu")
-selected_view = st.sidebar.selectbox("Select Module", view_options, index=currentIndex)
-
-if selected_view != st.session_state.selected_dept:
-    st.session_state.selected_dept = selected_view
+# Sidebar Quick Navigation Menu (Scroll-free clean buttons)
+st.sidebar.markdown("### 🎛️ Quick Navigation")
+if st.sidebar.button("🏠 Operations Dashboard", use_container_width=True):
+    st.session_state.selected_dept = "Dashboard"
     st.rerun()
 
+if st.sidebar.button("🔐 Access & Authority Matrix", use_container_width=True):
+    st.session_state.selected_dept = "🔐 Access & Authority Matrix"
+    st.rerun()
+
+st.sidebar.markdown("---")
+st.sidebar.markdown("**Departments Portal:**")
+
+sidebar_depts = ["Store", "Maintenance", "Dispatch", "Accounts", "Purchase", "Core", "Fettling", "Quality", "Production", "Development", "Lab", "Sales", "Plant Head", "Company Head"]
+
+for s_dept in sidebar_depts:
+    if st.sidebar.button(f"👉 {s_dept}", key=f"side_{s_dept}", use_container_width=True):
+        st.session_state.selected_dept = s_dept
+        st.rerun()
+
+# Main Body Logic
 if st.session_state.selected_dept == "Dashboard":
     
     departments = [
@@ -196,10 +156,10 @@ if st.session_state.selected_dept == "Dashboard":
                     st.markdown(f"""
                         <div class="dept-card">
                             <div class="card-title">{dept['name']}</div>
-                            <hr style="margin: 4px 0 6px 0; border-color: #e2e8f0;">
-                            <p style="font-size: 0.78rem; color: #475569; margin-bottom: 4px;"><strong>Access Rights:</strong><br>{dept['access']}</p>
-                            <p style="font-size: 0.78rem; color: #475569; margin-bottom: 6px;"><strong>Authority:</strong><br>{dept['auth']}</p>
-                            <div style="background: #f0f6ff; padding: 6px; border-radius: 6px; font-size: 0.78rem; border-left: 3px solid #1e40af; color: #1e40af;">
+                            <hr style="margin: 2px 0 4px 0; border-color: #e2e8f0;">
+                            <p style="font-size: 0.75rem; color: #475569; margin-bottom: 2px;"><strong>Access Rights:</strong><br>{dept['access']}</p>
+                            <p style="font-size: 0.75rem; color: #475569; margin-bottom: 4px;"><strong>Authority:</strong><br>{dept['auth']}</p>
+                            <div style="background: #f0f6ff; padding: 4px; border-radius: 4px; font-size: 0.75rem; border-left: 3px solid #1e40af; color: #1e40af;">
                                 <strong>KPI:</strong> {dept['kpi']}
                             </div>
                         </div>
@@ -235,7 +195,6 @@ elif st.session_state.selected_dept == "🔐 Access & Authority Matrix":
 else:
     current_dept = st.session_state.selected_dept
     st.title(f"🛠️ {current_dept} Management Portal")
-    st.markdown(f'<div class="alert-box">⚠️ Active Module: {current_dept} | Strict Compliance & Quality Control Mode Active.</div>', unsafe_allow_html=True)
     
     if st.button("⬅️ Back to Dashboard"):
         st.session_state.selected_dept = "Dashboard"
