@@ -223,7 +223,7 @@ else:
             }), use_container_width=True)
             st.line_chart(pd.DataFrame({"Inventory Accuracy %": [97, 97.5, 98, 98.5, 99]}))
 
-    # 2. MAINTENANCE DEPARTMENT (Updated with professional foundry working & KPIs)
+    # 2. MAINTENANCE DEPARTMENT
     elif "Maintenance" in current_dept:
         with tab1:
             st.subheader("🔧 Machine Asset Register & Breakdown History")
@@ -274,22 +274,67 @@ else:
             }), use_container_width=True)
             st.line_chart(pd.DataFrame({"Machine Availability %": [93, 94, 95, 95.5]}))
 
-    # 3. DISPATCH DEPARTMENT
+    # 3. DISPATCH DEPARTMENT (Updated with professional foundry working & traceability)
     elif "Dispatch" in current_dept:
         with tab1:
-            st.subheader("Final Verification & Customer Dispatches")
-            st.dataframe(pd.DataFrame({"Challan No": ["CH-089", "CH-090"], "Customer": ["Tata Motors", "Kirloskar"], "Weight (MT)": [12.5, 8.0], "OTD Status": ["On-Time", "On-Time"]}), use_container_width=True)
+            st.subheader("📦 Dispatch Register & Order Tracking")
+            st.dataframe(pd.DataFrame({
+                "Dispatch Date": ["08-Oct-2026", "08-Oct-2026", "07-Oct-2026"],
+                "Customer Name": ["Tata Motors", "Kirloskar Brothers", "Bharat Forge"],
+                "Customer PO No.": ["PO-8921", "PO-4412", "PO-9012"],
+                "Part No. / Grade": ["TM-HSG-01 / FG-260", "KB-IMP-04 / FG-300", "BF-BRK-09 / SG-400"],
+                "Dispatch Qty (MT)": [12.5, 8.0, 15.2],
+                "DC No.": ["DC-2026-101", "DC-2026-102", "DC-2026-103"],
+                "Vehicle No.": ["MH-11-Q-4521", "MH-14-BW-9921", "MH-09-AA-1234"],
+                "POD Status": ["Received", "Pending", "Received"]
+            }), use_container_width=True)
+            
+            st.info("💡 **Traceability Rule:** Complete traceability is maintained from Customer PO No. → Sales Order → Dispatch Plan → Quality Clearance → DC & Invoice → Gate Outward → POD Delivery.")
+
         with tab2:
-            st.subheader("Create Dispatch Entry")
-            with st.form("dispatch_form"):
-                st.text_input("Customer Name")
-                st.text_input("Challan / Invoice No")
-                st.number_input("Dispatched Weight (MT)", 0.0)
-                st.form_submit_button("Generate Dispatch")
+            st.subheader("Create New Dispatch Entry & Document Generation")
+            with st.form("dispatch_doc_form"):
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.text_input("Customer Name")
+                    st.text_input("Customer PO No.")
+                    st.text_input("Sales Order No.")
+                    st.text_input("Dispatch Plan No.")
+                    st.text_input("Part No. & Grade / Batch No.")
+                    st.number_input("Planned Qty vs Dispatch Qty (MT)", 0.0)
+                    st.text_input("Packing List No. & Box/Pallet Count")
+                with col2:
+                    st.text_input("Inspection Report No. (Quality Clearance)")
+                    st.text_input("DC No. - Delivery Challan")
+                    st.text_input("Invoice No. & Date")
+                    st.text_input("Vehicle No. & Driver Name")
+                    st.text_input("Transporter Name & LR/GR No.")
+                    st.text_input("E-way Bill No.")
+                    st.text_input("Gate Outward No. & Dispatch Time")
+                
+                st.text_area("Delivery Instructions, Remarks & Shortage/Damage Notes")
+                st.form_submit_button("Generate Dispatch & Save Record")
+
         with tab3:
-            st.subheader("🚚 Dispatch Department Month-Wise Report")
+            st.subheader("🚚 Dispatch Department Month-Wise Report & KPIs")
             selected_month = st.selectbox("Select Month for Dispatch Report", months_list, index=9)
-            st.write(f"Dispatch tonnage and On-Time Delivery (OTD) summary for **{selected_month} 2026**.")
+            
+            col_d1, col_d2, col_d3, col_d4 = st.columns(4)
+            with col_d1:
+                st.metric("Total Dispatch Tonnage", "1,250 MT", "8% vs last month")
+            with col_d2:
+                st.metric("On-Time Delivery (OTD)", "98.2%", "1.5% ↑")
+            with col_d3:
+                st.metric("Pending Orders Qty", "45 MT", "-12 MT")
+            with col_d4:
+                st.metric("Document Errors", "0 Count", "Zero defect")
+
+            st.write(f"Detailed dispatch and logistics performance summary for **{selected_month} 2026**.")
+            st.dataframe(pd.DataFrame({
+                "Parameter / Report Type": ["Daily Dispatch Schedule Tracking", "Finished Goods Stock Verification", "Quality Clearance Audit", "Transport & Vehicle Availability", "DC & Tax Invoice Reconciliation", "POD Collection Status", "Damage / Shortage Cases"],
+                f"{selected_month} Status": ["100% On Schedule", "Available", "Approved", "Coordinated", "Reconciled", "96% Received", "0 Cases"]
+            }), use_container_width=True)
+            
             st.bar_chart(pd.DataFrame({"Dispatched Tonnage (MT)": [310, 330, 345, 360]}))
 
     # 4. ACCOUNTS DEPARTMENT
