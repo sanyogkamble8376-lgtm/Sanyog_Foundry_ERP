@@ -180,22 +180,52 @@ else:
         
     tab1, tab2, tab3 = st.tabs(["Active Records & Tracking", "Add New Entry / Form", "Reports & Analytics"])
     
-    # 1. STORE DEPARTMENT
+    # 1. STORE DEPARTMENT (Updated with exact SOP documents and Daily Working)
     if "Store" in current_dept:
         with tab1:
-            st.subheader("Inventory & FIFO/Traceability Records")
-            st.dataframe(pd.DataFrame({"Item Name": ["Pig Iron", "Scrap Grade A", "Resin Binder"], "Category": ["Raw Material", "Raw Material", "Consumables"], "Stock Qty (Kg)": [15000, 8500, 420], "Status": ["Optimal", "Low", "Optimal"]}), use_container_width=True)
+            st.subheader("📦 Stock Ledger / Bin Card (Current Inventory & Movement)")
+            st.dataframe(pd.DataFrame({
+                "Item Name": ["Pig Iron", "Scrap Grade A", "Resin Binder", "Core Sand"],
+                "Category": ["Raw Material", "Raw Material", "Consumables", "Raw Material"],
+                "Stock Qty (Kg)": [15000, 8500, 420, 12000],
+                "Min Stock Level": [5000, 3000, 200, 4000],
+                "Status": ["Optimal", "Low - Reorder", "Optimal", "Optimal"]
+            }), use_container_width=True)
+            
+            st.info("💡 **FIFO & Traceability:** Raw materials and finished castings are maintained strictly on FIFO (First-In, First-Out) basis with batch traceability.")
+
         with tab2:
-            st.subheader("Material Receipt & Issue Entry")
-            with st.form("store_form"):
-                st.text_input("Item Name / Description")
-                st.selectbox("Category", ["Raw Material", "Consumables", "Tools", "Spares", "Finished Goods"])
-                st.number_input("Quantity", 0.0)
-                st.text_input("Source / Reference")
-                st.form_submit_button("Save Store Record")
+            st.subheader("Store Document Tracking & Inward Entry Form")
+            with st.form("store_doc_form"):
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.text_input("Gate Inward No. (Vehicle / Material entry)")
+                    st.text_input("DC No. - Delivery Challan (Supplier delivery details)")
+                    st.text_input("PO No. - Purchase Order (Official order to supplier)")
+                    st.text_input("PR No. - Purchase Requisition (Material requirement demand)")
+                    st.text_input("MRN / Requisition No. (Dept material demand)")
+                with col2:
+                    st.text_input("GRN No. - Goods Receipt Note (Official receipt entry)")
+                    st.text_input("Inspection Report No. (Quality / Lab inspection record)")
+                    st.text_input("Material Issue Slip No. (Issued to production)")
+                    st.text_input("Return Note No. (Material return entry)")
+                    st.text_input("NCR No. / Rejection Note (Non-conforming material)")
+                
+                st.text_area("Material Details, Supplier Name & Remarks")
+                st.form_submit_button("Save Store Document Record")
+
         with tab3:
-            st.subheader("Inventory Accuracy & Stock Variance")
-            st.line_chart(pd.DataFrame({"Accuracy %": [97, 97.5, 98, 98]}))
+            st.subheader("Store Department Daily Working & Checklist")
+            st.markdown("""
+            * **Supplier Inward:** Supplier kadun aaleya materialchi gate entry and DC verification karne.
+            * **Verification:** PO, Challan, quantity, ani material code check karne.
+            * **GRN & Stock Update:** GRN tayar karun ERP stock update karne.
+            * **Quality Segregation:** Quality hold / rejected material la wegle thevun NCR no. generate karne.
+            * **Material Issue:** Production ani Maintenance la Material Issue Slip dwara material watap karne.
+            * **Stock Control:** Minimum stock level maintain karne ani shortage aslyas Purchase Department la कळvane.
+            * **Reconciliation:** Daily inward-outward report ani monthly stock reconciliation (Physical stock vs ERP stock) karne.
+            """)
+            st.line_chart(pd.DataFrame({"Inventory Accuracy %": [97, 97.5, 98, 98.5]}))
 
     # 2. MAINTENANCE DEPARTMENT
     elif "Maintenance" in current_dept:
