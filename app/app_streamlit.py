@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS for Strict 4-Color Palette: White, Faint Blue, Dark Blue, Red (Alerts/Errors)
+# Custom CSS for Strict 4-Color Palette & Clear Tab Visibility
 st.markdown("""
     <style>
     /* Global Background - Pure White */
@@ -82,6 +82,13 @@ st.markdown("""
         font-size: 0.85rem;
         font-weight: 600;
         margin-bottom: 10px;
+    }
+    
+    /* Make Tabs Clearly Visible (Dark Blue Text for All Tabs) */
+    .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
+        font-size: 1rem !important;
+        font-weight: 700 !important;
+        color: #1e40af !important;
     }
     
     /* Sidebar Styling - Faint Blue Tint */
