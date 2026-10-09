@@ -151,7 +151,6 @@ if st.session_state.selected_dept == "Operations Master Dashboard":
                         </div>
                     """, unsafe_allow_html=True)
                     
-                    # Clean button name for state matching
                     clean_name = dept['name']
                     if st.button(f"Manage {clean_name.split(' ', 1)[1]}", key=f"btn_{i+j}", use_container_width=True):
                         st.session_state.selected_dept = dept['name']
@@ -392,4 +391,13 @@ else:
     # 14. COMPANY HEAD / MANAGEMENT
     elif "Company Head" in current_dept:
         st.subheader("👑 Executive Business Strategy & Performance")
-        st.write("Strategic control over long-term growth, profitability, financial
+        st.write("Strategic control over long-term growth, profitability, financial planning, and policy making.")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Annual Revenue", "₹ 48.5 Crores", "12% YoY")
+        with col2:
+            st.metric("Net Profitability", "14.2%", "1.5% YoY")
+        with col3:
+            st.metric("Overall OEE", "78.5%", "2.1% ↑")
+        st.subheader("Company Growth & Investment Trend")
+        st.line_chart(pd.DataFrame({"Revenue (Crores)": [35, 39, 43, 48.5]}))
