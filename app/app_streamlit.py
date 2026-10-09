@@ -274,7 +274,7 @@ else:
             }), use_container_width=True)
             st.line_chart(pd.DataFrame({"Machine Availability %": [93, 94, 95, 95.5]}))
 
-    # 3. DISPATCH DEPARTMENT (Updated with professional foundry working & traceability)
+    # 3. DISPATCH DEPARTMENT
     elif "Dispatch" in current_dept:
         with tab1:
             st.subheader("📦 Dispatch Register & Order Tracking")
@@ -288,9 +288,7 @@ else:
                 "Vehicle No.": ["MH-11-Q-4521", "MH-14-BW-9921", "MH-09-AA-1234"],
                 "POD Status": ["Received", "Pending", "Received"]
             }), use_container_width=True)
-            
             st.info("💡 **Traceability Rule:** Complete traceability is maintained from Customer PO No. → Sales Order → Dispatch Plan → Quality Clearance → DC & Invoice → Gate Outward → POD Delivery.")
-
         with tab2:
             st.subheader("Create New Dispatch Entry & Document Generation")
             with st.form("dispatch_doc_form"):
@@ -311,14 +309,11 @@ else:
                     st.text_input("Transporter Name & LR/GR No.")
                     st.text_input("E-way Bill No.")
                     st.text_input("Gate Outward No. & Dispatch Time")
-                
                 st.text_area("Delivery Instructions, Remarks & Shortage/Damage Notes")
                 st.form_submit_button("Generate Dispatch & Save Record")
-
         with tab3:
             st.subheader("🚚 Dispatch Department Month-Wise Report & KPIs")
             selected_month = st.selectbox("Select Month for Dispatch Report", months_list, index=9)
-            
             col_d1, col_d2, col_d3, col_d4 = st.columns(4)
             with col_d1:
                 st.metric("Total Dispatch Tonnage", "1,250 MT", "8% vs last month")
@@ -328,32 +323,66 @@ else:
                 st.metric("Pending Orders Qty", "45 MT", "-12 MT")
             with col_d4:
                 st.metric("Document Errors", "0 Count", "Zero defect")
-
             st.write(f"Detailed dispatch and logistics performance summary for **{selected_month} 2026**.")
             st.dataframe(pd.DataFrame({
                 "Parameter / Report Type": ["Daily Dispatch Schedule Tracking", "Finished Goods Stock Verification", "Quality Clearance Audit", "Transport & Vehicle Availability", "DC & Tax Invoice Reconciliation", "POD Collection Status", "Damage / Shortage Cases"],
                 f"{selected_month} Status": ["100% On Schedule", "Available", "Approved", "Coordinated", "Reconciled", "96% Received", "0 Cases"]
             }), use_container_width=True)
-            
             st.bar_chart(pd.DataFrame({"Dispatched Tonnage (MT)": [310, 330, 345, 360]}))
 
-    # 4. ACCOUNTS DEPARTMENT
+    # 4. ACCOUNTS DEPARTMENT (Updated with professional foundry working, P2P, O2C, vouchers & BRS)
     elif "Accounts" in current_dept:
         with tab1:
-            st.subheader("Financial Transactions & Costing")
-            st.dataframe(pd.DataFrame({"Voucher ID": ["V-101", "V-102"], "Particulars": ["Alloy Sourcing", "Payroll"], "Type": ["Debit", "Debit"], "Amount (₹)": [450000, 120000]}), use_container_width=True)
+            st.subheader("📊 Ledger & Voucher Register (Purchase, Sales & Receipts)")
+            st.dataframe(pd.DataFrame({
+                "Voucher No.": ["PV-2026-101", "RV-2026-102", "JV-2026-103", "PV-2026-104"],
+                "Date": ["08-Oct-2026", "08-Oct-2026", "07-Oct-2026", "06-Oct-2026"],
+                "Voucher Type": ["Payment", "Receipt", "Journal", "Payment"],
+                "Party Name": ["JSW Steel (Supplier)", "Tata Motors (Customer)", "Depreciation Adjustment", "National Alloys"],
+                "PO / Invoice No.": ["PO-501 / INV-881", "INV-2026-302", "JV-DEP-01", "PO-502 / INV-412"],
+                "Amount (₹)": [450000, 1250000, 85000, 210000],
+                "Status": ["Paid (UTR-9981)", "Received", "Adjusted", "Paid (UTR-7742)"]
+            }), use_container_width=True)
+            st.info("💡 **Traceability Rule:** Complete linkage is maintained: PO No. → GRN No. → Supplier Invoice → Payment Voucher, and Customer PO → Sales Invoice → DC → Receipt Voucher.")
         with tab2:
-            st.subheader("Add Financial Record")
-            with st.form("acc_form"):
-                st.text_input("Particulars / Description")
-                st.selectbox("Transaction Type", ["Receipt", "Payment", "Billing", "Payroll"])
-                st.number_input("Amount (₹)", 0.0)
-                st.form_submit_button("Save Transaction")
+            st.subheader("Bill Booking, Payment & Receipt Voucher Entry Form")
+            with st.form("accounts_doc_form"):
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.selectbox("Voucher Type", ["Purchase Bill Booking (Payment)", "Sales Invoice (Receipt)", "Payment Voucher", "Receipt Voucher", "Journal Voucher (JV)"])
+                    st.text_input("Voucher No. / Reference No.")
+                    st.text_input("Party Name & Code")
+                    st.text_input("PO No. / GRN No. / DC No.")
+                    st.text_input("Supplier Invoice No. / Sales Invoice No.")
+                    st.number_input("Taxable Amount (₹)", 0.0)
+                with col2:
+                    st.number_input("CGST / SGST / IGST Amount (₹)", 0.0)
+                    st.number_input("TDS Amount Deducted (₹)", 0.0)
+                    st.number_input("Total Amount (₹)", 0.0)
+                    st.date_input("Due Date")
+                    st.selectbox("Payment Mode", ["NEFT / RTGS", "Cheque", "UPI / NetBanking", "Cash"])
+                    st.text_input("Bank UTR No. / Cheque No.")
+                st.text_area("Narration, Remarks & Reconciliation Status")
+                st.form_submit_button("Save Accounts Voucher & Post Entry")
         with tab3:
-            st.subheader("📊 Accounts Department Month-Wise Report")
+            st.subheader("📊 Accounts Department Month-Wise Report & Financial KPIs")
             selected_month = st.selectbox("Select Month for Accounts Report", months_list, index=9)
-            st.write(f"Financial billing, collections, and cost variance report for **{selected_month} 2026**.")
-            st.metric("Total Monthly Billing", "₹ 4.15 Crores", "5% vs last month")
+            
+            col_a1, col_a2, col_a3, col_a4 = st.columns(4)
+            with col_a1:
+                st.metric("Customer Receivables", "₹ 2.45 Cr", "-5% vs last month")
+            with col_a2:
+                st.metric("Overdue Amount", "₹ 35.2 Lakhs", "Controlled")
+            with col_a3:
+                st.metric("Supplier Payables", "₹ 1.85 Cr", "On Schedule")
+            with col_a4:
+                st.metric("BRS Reconciliation", "100%", "Matched")
+
+            st.write(f"Comprehensive financial summary, tax compliance, and billing report for **{selected_month} 2026**.")
+            st.dataframe(pd.DataFrame({
+                "Financial Activity / Report Type": ["Purchase Bill Booking & Verification", "Supplier Payment & UTR Reconciliation", "Customer Sales Billing & Invoicing", "Customer Receipt & Outstanding Tracking", "Bank Reconciliation Statement (BRS)", "GST Return & TDS Compliance Filing", "Monthly P&L & Costing Reconciliation"],
+                f"{selected_month} Status": ["Verified", "Processed", "₹ 4.15 Cr Billed", "Reconciled", "Completed", "Filed on Portal", "Updated"]
+            }), use_container_width=True)
             st.line_chart(pd.DataFrame({"Cost Variance %": [2.8, 2.5, 2.2, 2.0]}))
 
     # 5. PURCHASE DEPARTMENT
