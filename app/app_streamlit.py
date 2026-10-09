@@ -124,8 +124,8 @@ if st.session_state.selected_dept == "Operations Master Dashboard":
         {"name": "🛒 Purchase Department", "color": "#6366f1", "work": "• Raw material, alloys, sand & spare parts sourcing\n• Supplier selection, quotation comparison, negotiation & OTD", "kpi": "Purchase Cost Saving: 5%\nSupplier OTD: 95%"},
         {"name": "🛡️ Core Department", "color": "#14b8a6", "work": "• Sand preparation, core making, curing/baking & core box control\n• Dimensional inspection & core identification", "kpi": "Core Rejection: < 3%\nCore Productivity: 10% ↑"},
         {"name": "⚙️ Fettling Department", "color": "#eab308", "work": "• Sand removal, runner/riser removal, shot blasting & grinding\n• Dressing and finishing castings for inspection/dispatch", "kpi": "Finishing Rejection: < 2%\nProductivity: 10% ↑"},
-        {"name": "🔬 Quality Department", "color": "#8b5cf6", "work": "• Incoming to final casting quality planning, inspection & process control\n• Defect analysis, CAPA & customer complaint reduction", "kpi": "PPM < 500: < 9%\nCustomer Complaints: < 1%"},
-        {"name": "🏭 Production Department", "color": "#3b82f6", "work": "• Production planning, manpower & machine utilization\n• Process control, productivity & safe efficient production", "kpi": "Achievement: 95%\nOEE: 78.5%"},
+        {"name": "🔬 Quality Department", "color": "#8b5cf6", "work": "• Incoming to final casting quality planning, inspection & process control\n• Defect analysis, CAPA & customer complaint reduction", "kpi": "First Pass Yield: 96.5%\nCustomer PPM: < 380"},
+        {"name": "🏭 Production Department", "color": "#3b82f6", "work": "• Production planning, manpower & machine utilization\n• Process control, productivity & safe efficient production", "kpi": "Target Achievement: 96%\nOEE: 78.5%"},
         {"name": "💡 Development Department", "color": "#06b6d4", "work": "• New casting/product, process & pattern/core development\n• Trial casting, process optimization & successful transfer to production", "kpi": "Lead Time: -20%\nTrial Success: 90%"},
         {"name": "🧪 Laboratory Department", "color": "#1e40af", "work": "• Chemical analysis, spectrometer, sand, hardness & microstructure tests\n• Maintaining test reports & material/process traceability", "kpi": "Testing Accuracy: 99%\nTurnaround Time: < 24 hrs"},
         {"name": "🤝 Sales Department", "color": "#be185d", "work": "• Customer requirements, enquiry handling, quotation & order follow-up\n• Customer communication, sales planning & business development", "kpi": "Order Growth: 10%\nEnquiry Conversion: 25%"},
@@ -162,11 +162,11 @@ if st.session_state.selected_dept == "Operations Master Dashboard":
     with b_cols[0]:
         st.metric(label="Total Production (MT)", value="1,250 MT", delta="8% vs last month")
     with b_cols[1]:
-        st.metric(label="Rejection Rate", value="2.1%", delta="-1.2% vs last month")
+        st.metric(label="Rejection Rate", value="1.8%", delta="-0.5% vs last month")
     with b_cols[2]:
         st.metric(label="On-Time Delivery", value="98%", delta="3% vs last month")
     with b_cols[3]:
-        st.metric(label="Customer Satisfaction", value="96%", delta="2% vs last month")
+        st.metric(label="Customer PPM", value="380 PPM", delta="-120 PPM")
 
 else:
     # Specific Department Management Portal
@@ -178,7 +178,7 @@ else:
         st.session_state.selected_dept = "Operations Master Dashboard"
         st.rerun()
         
-    tab1, tab2, tab3 = st.tabs(["Active Records & Tracking", "Add New Entry / Form", "Month-Wise Reports & Analytics"])
+    tab1, tab2, tab3 = st.tabs(["Active Records & Tracking", "Add New Entry / Form", "Month-Wise Reports & Daily Summary"])
     
     # Common Month Selector for Reports Tab
     months_list = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
@@ -441,7 +441,7 @@ else:
             }), use_container_width=True)
             st.line_chart(pd.DataFrame({"Supplier OTD %": [92, 93, 94, 95.2]}))
 
-    # 6. CORE DEPARTMENT (Updated with professional foundry working, sand mix, production & traceability)
+    # 6. CORE DEPARTMENT
     elif "Core" in current_dept:
         with tab1:
             st.subheader("🛡️ Core Production Register & Batch Tracking")
@@ -497,7 +497,7 @@ else:
             }), use_container_width=True)
             st.line_chart(pd.DataFrame({"Core Rejection %": [3.5, 2.9, 2.4, 2.1]}))
 
-    # 7. FETTLING DEPARTMENT (Updated with professional foundry working, grinding, shot blasting & rework)
+    # 7. FETTLING DEPARTMENT
     elif "Fettling" in current_dept:
         with tab1:
             st.subheader("⚙️ Fettling & Casting Finishing Register")
@@ -553,43 +553,126 @@ else:
             }), use_container_width=True)
             st.line_chart(pd.DataFrame({"Fettling Output (MT/Day)": [22, 24, 25, 26.5]}))
 
-    # 8. QUALITY DEPARTMENT
+    # 8. QUALITY DEPARTMENT (Updated with professional foundry working, incoming, process, lab testing, NCR, CAPA & KPIs)
     elif "Quality" in current_dept:
         with tab1:
-            st.subheader("Inspection, Defect Analysis & CAPA")
-            st.dataframe(pd.DataFrame({"Heat No": ["H-891", "H-892"], "Defect": ["Blowhole", "Shrinkage"], "PPM": [420, 380], "Status": ["CAPA Applied", "Resolved"]}), use_container_width=True)
+            st.subheader("🔬 Quality Assurance, Inspection & Defect Register")
+            st.dataframe(pd.DataFrame({
+                "Inspection ID": ["INS-2026-901", "INS-2026-902", "INS-2026-903"],
+                "Heat / Batch No.": ["H-2026-410", "H-2026-411", "H-2026-412"],
+                "Part Name & Grade": ["Housing Cover (FG-260)", "Hydraulic Body (FG-300)", "Bracket (SG-400)"],
+                "Stage": ["Final Casting Inspection", "Incoming Material", "In-Process Pouring"],
+                "Defect Noted": ["Blowhole", "None (OK)", "Shrinkage"],
+                "PPM Level": [380, 0, 420],
+                "CAPA Status": ["Applied & Resolved", "Passed", "Under Investigation"]
+            }), use_container_width=True)
+            st.info("💡 **Traceability Rule:** Complete traceability from Incoming Raw Material → Process Inspection → Lab/Metallurgical Testing → Dimensional & Visual Check → NCR / CAPA → Final Quality Clearance.")
         with tab2:
-            st.subheader("Log Inspection & Defects")
-            with st.form("quality_form"):
-                st.text_input("Heat / Casting ID")
-                st.selectbox("Defect Type", ["Blowhole", "Shrinkage", "Sand Inclusion", "Crack", "None"])
-                st.number_input("PPM Level", 0)
-                st.text_input("Corrective Action (CAPA)")
-                st.form_submit_button("Save Quality Record")
+            st.subheader("Quality Inspection, Testing & NCR Entry Form")
+            with st.form("quality_doc_form"):
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.text_input("Inspection Report No. & Heat No.")
+                    st.text_input("Part Name, No. & Material Grade")
+                    st.selectbox("Inspection Stage", ["Incoming Material Inspection", "Process Inspection (Moulding/Core)", "Lab / Metallurgical Testing", "Dimensional & Visual Inspection", "Fettling & Final Inspection"])
+                    st.text_input("Chemical Analysis & Hardness Report Ref")
+                    st.text_input("Dimensional Check Result (Vernier/Gauge)")
+                    st.selectbox("Defect Category", ["Blowhole", "Shrinkage", "Sand Inclusion", "Mismatch", "Crack / Cold Shut", "None (OK)"])
+                with col2:
+                    st.number_input("Inspected Qty vs First-Time OK Qty", 0)
+                    st.number_input("Rework Qty vs Rejection Qty", 0)
+                    st.number_input("Calculated Customer PPM", 0)
+                    st.text_input("NCR No. - Non-Conformance Report Ref")
+                    st.text_input("CAPA / Root Cause Analysis (RCA) Ref")
+                    st.selectbox("Quality Clearance Status", ["Released / Approved", "Rework Given", "Rejected / Scrap", "Customer Waiver Pending"])
+                st.text_area("Quality Inspector Remarks, Calibration Ref & Sign-off")
+                st.form_submit_button("Save Quality Inspection Record")
         with tab3:
-            st.subheader("🔬 Quality Department Month-Wise Report")
+            st.subheader("🔬 Quality Department Month-Wise Report & KPIs")
             selected_month = st.selectbox("Select Month for Quality Report", months_list, index=9)
-            st.write(f"PPM trend, defect analysis, and customer complaints summary for **{selected_month} 2026**.")
-            st.line_chart(pd.DataFrame({"PPM Level": [550, 490, 440, 420]}))
+            
+            col_q1, col_q2, col_q3, col_q4 = st.columns(4)
+            with col_q1:
+                st.metric("First Pass Yield", "96.5%", "1.2% ↑")
+            with col_q2:
+                st.metric("Customer PPM", "380 PPM", "Target < 500")
+            with col_q3:
+                st.metric("NCR Closure Rate", "98.0%", "Fast Action")
+            with col_q4:
+                st.metric("Internal Rejection %", "1.8%", "-0.5%")
 
-    # 9. PRODUCTION DEPARTMENT
+            st.write(f"Comprehensive quality performance, first pass yield, and defect analysis summary for **{selected_month} 2026**.")
+            st.dataframe(pd.DataFrame({
+                "Quality Activity / Report": ["Customer Drawing & Specification Review", "Incoming Raw Material Inspection", "Process & Lab / Metallurgical Testing", "Dimensional & Final Casting Inspection", "NCR Generation & Defect Disposition", "RCA & CAPA Corrective Action Tracking", "Final Quality Clearance & Release"],
+                f"{selected_month} Status": ["Reviewed", "Verified", "Tested", "Inspected", "Tracked", "Closed", "Cleared"]
+            }), use_container_width=True)
+            st.line_chart(pd.DataFrame({"First Pass Yield %": [94.0, 95.2, 96.0, 96.5]}))
+
+    # 9. PRODUCTION DEPARTMENT (Updated with professional foundry working, planning, melting, pouring, shakeout, OEE & Daily Report Format)
     elif "Production" in current_dept:
-        with tab1:
-            st.subheader("Production Planning & Machine Utilization")
-            st.dataframe(pd.DataFrame({"Shift": ["Morning", "Evening"], "Grade": ["FG-260", "FG-300"], "Target (MT)": [25, 25], "Actual (MT)": [24.5, 26.0]}), use_container_width=True)
-        with tab2:
-            st.subheader("Log Shift Production")
-            with st.form("prod_form"):
-                st.selectbox("Shift", ["Morning Shift", "Evening Shift", "Night Shift"])
-                st.text_input("Grade / Item Casted")
-                st.number_input("Actual Tonnage (MT)", 0.0)
-                st.slider("OEE %", 50, 100, 78)
-                st.form_submit_button("Save Production Log")
-        with tab3:
-            st.subheader("🏭 Production Department Month-Wise Report")
+        tab_p1, tab_p2, tab_p3 = st.tabs(["Active Records & Tracking", "Add New Entry / Form", "Month-Wise Reports & Daily Department Report"])
+        
+        with tab_p1:
+            st.subheader("🏭 Production Planning, Shift Register & Melting/Pouring Logs")
+            st.dataframe(pd.DataFrame({
+                "Prod Plan No.": ["PLN-2026-501", "PLN-2026-502", "PLN-2026-503"],
+                "Shift": ["Morning Shift", "Evening Shift", "Night Shift"],
+                "Casting Grade / Part": ["FG-260 / Housing", "FG-300 / Body", "SG-400 / Bracket"],
+                "Target (Qty/MT)": ["30 MT", "25 MT", "28 MT"],
+                "Actual Produced": ["29.2 MT", "25.5 MT", "27.8 MT"],
+                "OEE %": ["79.2%", "78.0%", "80.5%"],
+                "Status": ["Achieved", "Achieved", "Achieved"]
+            }), use_container_width=True)
+            st.info("💡 **Traceability Rule:** Complete linkage from Production Plan → Job/Route Card → Material Issue Slip → Charge Calculation → Heat Number / Melting Log → Pouring → Shakeout → Fettling Handover.")
+        
+        with tab_p2:
+            st.subheader("Shift Production Planning, Melting & Pouring Entry Form")
+            with st.form("production_doc_form"):
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.text_input("Production Plan No. & Job Card / Route Card No.")
+                    st.selectbox("Shift", ["Morning Shift", "Evening Shift", "Night Shift"])
+                    st.text_input("Material Issue Slip No. & Charge Calculation Ref")
+                    st.text_input("Heat Number / Batch Record No.")
+                    st.text_input("Casting Grade & Part Name / No.")
+                    st.number_input("Target Production Qty vs Actual Produced Qty", 0)
+                with col2:
+                    st.number_input("Total Metal Input Weight (Kg) vs Good Casting Weight (Kg)", 0.0)
+                    st.slider("Material Yield %", 0.0, 100.0, 72.0)
+                    st.slider("OEE % (Overall Equipment Effectiveness)", 0.0, 100.0, 78.5)
+                    st.text_input("Furnace Temperature (°C) & Pouring Timing")
+                    st.text_input("Machine Downtime Hours & Reason")
+                    st.selectbox("Production Handover Status", ["Completed & Handed Over to Quality", "WIP in Process", "Pending Due to Breakdown"])
+                st.text_area("Shift Notes, Lab Chemistry Correction & Remarks")
+                st.form_submit_button("Save Production & Heat Log Record")
+                
+        with tab_p3:
+            st.subheader("📊 Production Month-Wise Report & Daily Department Report")
             selected_month = st.selectbox("Select Month for Production Report", months_list, index=9)
-            st.write(f"Production tonnage achievement and OEE efficiency for **{selected_month} 2026**.")
-            st.line_chart(pd.DataFrame({"Monthly OEE %": [75, 76.5, 78, 78.5]}))
+            
+            col_pr1, col_pr2, col_pr3, col_pr4 = st.columns(4)
+            with col_pr1:
+                st.metric("Monthly Production", "1,250 MT", "8% ↑")
+            with col_pr2:
+                st.metric("Target Achievement", "96.4%", "On Track")
+            with col_pr3:
+                st.metric("Material Yield %", "72.5%", "Optimal")
+            with col_pr4:
+                st.metric("Plant OEE", "78.5%", "Good")
+
+            st.markdown("---")
+            st.subheader("📋 Foundry Daily Department Report (Production vs Quality)")
+            st.write(f"Daily operational summary for **{selected_month} 2026** across shifts.")
+            
+            daily_report_df = pd.DataFrame({
+                "Department": ["Production Department", "Quality Department"],
+                "A Shift": ["Target: 35 MT | Actual: 34 MT | OK: 33 MT | Rej: 1 MT", "Inspected: 34 MT | Yield: 97% | FPY: 96.5%"],
+                "B Shift": ["Target: 35 MT | Actual: 35.5 MT | OK: 35 MT | Rej: 0.5 MT", "Inspected: 35.5 MT | Yield: 98% | FPY: 97.0%"],
+                "C Shift": ["Target: 30 MT | Actual: 29.5 MT | OK: 28.8 MT | Rej: 0.7 MT", "Inspected: 29.5 MT | Yield: 97.5% | FPY: 96.8%"],
+                "Daily Remarks": ["Minor furnace delay in A shift resolved", "All heats verified via spectrometer & lab test"]
+            })
+            st.dataframe(daily_report_df, use_container_width=True)
+            st.bar_chart(pd.DataFrame({"Daily Production Tonnage": [34, 35.5, 29.5]}))
 
     # 10. DEVELOPMENT DEPARTMENT
     elif "Development" in current_dept:
