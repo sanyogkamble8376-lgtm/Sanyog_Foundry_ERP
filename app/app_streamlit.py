@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS for Clean Professional White, Faint Blue & Dark Blue Theme (Fixed Input & Table Visibility)
+# Custom CSS for Clean Professional White & Dark Blue Theme (Fixed Input Labels & Text Visibility)
 st.markdown("""
     <style>
     /* Global Background - Pure White */
@@ -84,8 +84,14 @@ st.markdown("""
         margin-bottom: 10px;
     }
     
-    /* Input Fields, Selectboxes, and Forms Background Fix (Clean Light Look) */
-    .stTextInput>div>div>input, .stNumberInput>div>div>input, .stSelectbox>div>div>div {
+    /* Force Form Input Labels to be Dark Blue and Boldly Visible */
+    label, .stTextInput label, .stNumberInput label, .stSelectbox label, .stTextArea label, p {
+        color: #1e40af !important;
+        font-weight: 700 !important;
+    }
+    
+    /* Input Fields and Text Areas Styling */
+    .stTextInput input, .stNumberInput input, .stTextArea textarea {
         background-color: #f8fafc !important;
         color: #1e293b !important;
         border: 1px solid #cbd5e1 !important;
