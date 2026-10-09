@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS for Strict 4-Color Palette & Clear Tab Visibility
+# Custom CSS for Clean Professional White, Faint Blue & Dark Blue Theme (Fixed Input & Table Visibility)
 st.markdown("""
     <style>
     /* Global Background - Pure White */
@@ -84,7 +84,14 @@ st.markdown("""
         margin-bottom: 10px;
     }
     
-    /* Make Tabs Clearly Visible (Dark Blue Text for All Tabs) */
+    /* Input Fields, Selectboxes, and Forms Background Fix (Clean Light Look) */
+    .stTextInput>div>div>input, .stNumberInput>div>div>input, .stSelectbox>div>div>div {
+        background-color: #f8fafc !important;
+        color: #1e293b !important;
+        border: 1px solid #cbd5e1 !important;
+    }
+    
+    /* Tabs Clear Visibility */
     .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
         font-size: 1rem !important;
         font-weight: 700 !important;
@@ -97,7 +104,7 @@ st.markdown("""
         border-right: 1px solid #e2e8f0;
     }
     
-    /* Compact Spacing to Prevent Scrolling */
+    /* Compact Spacing */
     .block-container {
         padding-top: 1.5rem !important;
         padding-bottom: 1rem !important;
