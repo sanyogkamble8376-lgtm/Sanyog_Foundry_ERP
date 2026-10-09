@@ -171,4 +171,4 @@ else:
             st.form_submit_button("Save Record")
     with tab3:
         st.subheader("Department Reports & Analytics")
-        st.line_chart([10, 20, 15, 30, 45, 40])
+        st.line_chart([10, 20, 15, 30, 45, 40]).
