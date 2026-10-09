@@ -178,9 +178,12 @@ else:
         st.session_state.selected_dept = "Operations Master Dashboard"
         st.rerun()
         
-    tab1, tab2, tab3 = st.tabs(["Active Records & Tracking", "Add New Entry / Form", "Reports & Analytics"])
+    tab1, tab2, tab3 = st.tabs(["Active Records & Tracking", "Add New Entry / Form", "Month-Wise Reports & Analytics"])
     
-    # 1. STORE DEPARTMENT (Updated with exact SOP documents and Daily Working)
+    # Common Month Selector for Reports Tab
+    months_list = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+
+    # 1. STORE DEPARTMENT
     if "Store" in current_dept:
         with tab1:
             st.subheader("📦 Stock Ledger / Bin Card (Current Inventory & Movement)")
@@ -191,41 +194,34 @@ else:
                 "Min Stock Level": [5000, 3000, 200, 4000],
                 "Status": ["Optimal", "Low - Reorder", "Optimal", "Optimal"]
             }), use_container_width=True)
-            
-            st.info("💡 **FIFO & Traceability:** Raw materials and finished castings are maintained strictly on FIFO (First-In, First-Out) basis with batch traceability.")
-
+            st.info("💡 **FIFO & Traceability:** Raw materials and finished castings are maintained strictly on FIFO basis.")
         with tab2:
             st.subheader("Store Document Tracking & Inward Entry Form")
             with st.form("store_doc_form"):
                 col1, col2 = st.columns(2)
                 with col1:
-                    st.text_input("Gate Inward No. (Vehicle / Material entry)")
-                    st.text_input("DC No. - Delivery Challan (Supplier delivery details)")
-                    st.text_input("PO No. - Purchase Order (Official order to supplier)")
-                    st.text_input("PR No. - Purchase Requisition (Material requirement demand)")
-                    st.text_input("MRN / Requisition No. (Dept material demand)")
+                    st.text_input("Gate Inward No.")
+                    st.text_input("DC No. (Delivery Challan)")
+                    st.text_input("PO No. (Purchase Order)")
+                    st.text_input("PR No. (Purchase Requisition)")
+                    st.text_input("MRN / Requisition No.")
                 with col2:
-                    st.text_input("GRN No. - Goods Receipt Note (Official receipt entry)")
-                    st.text_input("Inspection Report No. (Quality / Lab inspection record)")
-                    st.text_input("Material Issue Slip No. (Issued to production)")
-                    st.text_input("Return Note No. (Material return entry)")
-                    st.text_input("NCR No. / Rejection Note (Non-conforming material)")
-                
+                    st.text_input("GRN No. (Goods Receipt Note)")
+                    st.text_input("Inspection Report No.")
+                    st.text_input("Material Issue Slip No.")
+                    st.text_input("Return Note No.")
+                    st.text_input("NCR No. / Rejection Note")
                 st.text_area("Material Details, Supplier Name & Remarks")
                 st.form_submit_button("Save Store Document Record")
-
         with tab3:
-            st.subheader("Store Department Daily Working & Checklist")
-            st.markdown("""
-            * **Supplier Inward:** Supplier kadun aaleya materialchi gate entry and DC verification karne.
-            * **Verification:** PO, Challan, quantity, ani material code check karne.
-            * **GRN & Stock Update:** GRN tayar karun ERP stock update karne.
-            * **Quality Segregation:** Quality hold / rejected material la wegle thevun NCR no. generate karne.
-            * **Material Issue:** Production ani Maintenance la Material Issue Slip dwara material watap karne.
-            * **Stock Control:** Minimum stock level maintain karne ani shortage aslyas Purchase Department la कळvane.
-            * **Reconciliation:** Daily inward-outward report ani monthly stock reconciliation (Physical stock vs ERP stock) karne.
-            """)
-            st.line_chart(pd.DataFrame({"Inventory Accuracy %": [97, 97.5, 98, 98.5]}))
+            st.subheader("📦 Store Department Month-Wise Report")
+            selected_month = st.selectbox("Select Month for Store Report", months_list, index=9)
+            st.write(f"Showing inventory accuracy and stock variance summary for **{selected_month} 2026**.")
+            st.dataframe(pd.DataFrame({
+                "Metric": ["Total Inward Transactions", "Total Material Issues", "Stock Reconciliation Accuracy", "Stock Variances Noted"],
+                f"{selected_month} Value": ["145 Entries", "110 Slips", "98.5%", "1.5%"]
+            }), use_container_width=True)
+            st.line_chart(pd.DataFrame({"Inventory Accuracy %": [97, 97.5, 98, 98.5, 99]}))
 
     # 2. MAINTENANCE DEPARTMENT
     elif "Maintenance" in current_dept:
@@ -240,8 +236,15 @@ else:
                 st.number_input("Downtime Hours", 0.0)
                 st.form_submit_button("Submit Maintenance Log")
         with tab3:
-            st.subheader("Machine Availability & MTTR Trend")
-            st.line_chart(pd.DataFrame({"Availability %": [93, 94, 95, 95]}))
+            st.subheader("🔧 Maintenance Department Month-Wise Report")
+            selected_month = st.selectbox("Select Month for Maintenance Report", months_list, index=9)
+            st.write(f"Equipment availability, MTTR, and breakdown hours for **{selected_month} 2026**.")
+            st.dataframe(pd.DataFrame({
+                "Equipment": ["Furnace 1", "Furnace 2", "Core Shooter", "Moulding Line"],
+                "Total Breakdown Hours": [4.5, 2.0, 3.0, 5.5],
+                "Availability %": ["95.2%", "97.8%", "96.5%", "94.0%"]
+            }), use_container_width=True)
+            st.line_chart(pd.DataFrame({"Availability %": [93, 94, 95, 95.5]}))
 
     # 3. DISPATCH DEPARTMENT
     elif "Dispatch" in current_dept:
@@ -256,8 +259,10 @@ else:
                 st.number_input("Dispatched Weight (MT)", 0.0)
                 st.form_submit_button("Generate Dispatch")
         with tab3:
-            st.subheader("On-Time Delivery (OTD) Performance")
-            st.bar_chart(pd.DataFrame({"OTD %": [96, 97, 98, 98]}))
+            st.subheader("🚚 Dispatch Department Month-Wise Report")
+            selected_month = st.selectbox("Select Month for Dispatch Report", months_list, index=9)
+            st.write(f"Dispatch tonnage and On-Time Delivery (OTD) summary for **{selected_month} 2026**.")
+            st.bar_chart(pd.DataFrame({"Dispatched Tonnage (MT)": [310, 330, 345, 360]}))
 
     # 4. ACCOUNTS DEPARTMENT
     elif "Accounts" in current_dept:
@@ -272,8 +277,11 @@ else:
                 st.number_input("Amount (₹)", 0.0)
                 st.form_submit_button("Save Transaction")
         with tab3:
-            st.subheader("Cost Control & Financial Accuracy")
-            st.line_chart(pd.DataFrame({"Accuracy %": [98, 98.5, 99, 99]}))
+            st.subheader("📊 Accounts Department Month-Wise Report")
+            selected_month = st.selectbox("Select Month for Accounts Report", months_list, index=9)
+            st.write(f"Financial billing, collections, and cost variance report for **{selected_month} 2026**.")
+            st.metric("Total Monthly Billing", "₹ 4.15 Crores", "5% vs last month")
+            st.line_chart(pd.DataFrame({"Cost Variance %": [2.8, 2.5, 2.2, 2.0]}))
 
     # 5. PURCHASE DEPARTMENT
     elif "Purchase" in current_dept:
@@ -288,7 +296,9 @@ else:
                 st.number_input("Estimated Cost (₹)", 0.0)
                 st.form_submit_button("Issue PO")
         with tab3:
-            st.subheader("Supplier OTD & Cost Saving Trend")
+            st.subheader("🛒 Purchase Department Month-Wise Report")
+            selected_month = st.selectbox("Select Month for Purchase Report", months_list, index=9)
+            st.write(f"Supplier OTD and procurement cost savings for **{selected_month} 2026**.")
             st.line_chart(pd.DataFrame({"Supplier OTD %": [92, 93, 94, 95]}))
 
     # 6. CORE DEPARTMENT
@@ -305,8 +315,10 @@ else:
                 st.number_input("Rejection Count", 0)
                 st.form_submit_button("Save Core Entry")
         with tab3:
-            st.subheader("Core Rejection & Productivity")
-            st.line_chart(pd.DataFrame({"Productivity Index": [85, 88, 90, 92]}))
+            st.subheader("🛡️ Core Department Month-Wise Report")
+            selected_month = st.selectbox("Select Month for Core Report", months_list, index=9)
+            st.write(f"Core production count and rejection rate analysis for **{selected_month} 2026**.")
+            st.line_chart(pd.DataFrame({"Rejection %": [3.5, 3.1, 2.8, 2.4]}))
 
     # 7. FETTLING DEPARTMENT
     elif "Fettling" in current_dept:
@@ -321,8 +333,10 @@ else:
                 st.number_input("OK Pieces", 0)
                 st.form_submit_button("Save Fettling Record")
         with tab3:
-            st.subheader("Finishing Productivity Trend")
-            st.line_chart(pd.DataFrame({"Output Pcs/Day": [210, 220, 235, 240]}))
+            st.subheader("⚙️ Fettling Department Month-Wise Report")
+            selected_month = st.selectbox("Select Month for Fettling Report", months_list, index=9)
+            st.write(f"Finishing productivity and dressing output for **{selected_month} 2026**.")
+            st.line_chart(pd.DataFrame({"Output Pcs/Day": [210, 220, 235, 245]}))
 
     # 8. QUALITY DEPARTMENT
     elif "Quality" in current_dept:
@@ -338,8 +352,10 @@ else:
                 st.text_input("Corrective Action (CAPA)")
                 st.form_submit_button("Save Quality Record")
         with tab3:
-            st.subheader("PPM Level & Customer Complaints Trend")
-            st.line_chart(pd.DataFrame({"PPM": [550, 490, 440, 420]}))
+            st.subheader("🔬 Quality Department Month-Wise Report")
+            selected_month = st.selectbox("Select Month for Quality Report", months_list, index=9)
+            st.write(f"PPM trend, defect analysis, and customer complaints summary for **{selected_month} 2026**.")
+            st.line_chart(pd.DataFrame({"PPM Level": [550, 490, 440, 420]}))
 
     # 9. PRODUCTION DEPARTMENT
     elif "Production" in current_dept:
@@ -355,8 +371,10 @@ else:
                 st.slider("OEE %", 50, 100, 78)
                 st.form_submit_button("Save Production Log")
         with tab3:
-            st.subheader("OEE & Productivity Trend")
-            st.line_chart(pd.DataFrame({"OEE %": [75, 76.5, 78, 78.5]}))
+            st.subheader("🏭 Production Department Month-Wise Report")
+            selected_month = st.selectbox("Select Month for Production Report", months_list, index=9)
+            st.write(f"Production tonnage achievement and OEE efficiency for **{selected_month} 2026**.")
+            st.line_chart(pd.DataFrame({"Monthly OEE %": [75, 76.5, 78, 78.5]}))
 
     # 10. DEVELOPMENT DEPARTMENT
     elif "Development" in current_dept:
@@ -370,8 +388,10 @@ else:
                 st.selectbox("Development Stage", ["Pattern Design", "Trial Casting", "Dimensional Audit", "Client Approval"])
                 st.form_submit_button("Save Development Entry")
         with tab3:
-            st.subheader("Trial Success Rate (%)")
-            st.line_chart(pd.DataFrame({"Success Rate %": [82, 85, 88, 90]}))
+            st.subheader("💡 Development Department Month-Wise Report")
+            selected_month = st.selectbox("Select Month for Development Report", months_list, index=9)
+            st.write(f"New casting trial success rate and lead time analysis for **{selected_month} 2026**.")
+            st.line_chart(pd.DataFrame({"Trial Success %": [82, 85, 88, 90]}))
 
     # 11. LABORATORY DEPARTMENT
     elif "Laboratory" in current_dept:
@@ -387,8 +407,10 @@ else:
                 st.number_input("Hardness BHN", 0.0)
                 st.form_submit_button("Save Lab Report")
         with tab3:
-            st.subheader("Testing Accuracy & Turnaround Time")
-            st.line_chart(pd.DataFrame({"Accuracy %": [98.5, 99, 99.2, 99.5]}))
+            st.subheader("🧪 Laboratory Department Month-Wise Report")
+            selected_month = st.selectbox("Select Month for Lab Report", months_list, index=9)
+            st.write(f"Testing accuracy and report turnaround time for **{selected_month} 2026**.")
+            st.line_chart(pd.DataFrame({"Testing Accuracy %": [98.5, 99, 99.2, 99.5]}))
 
     # 12. SALES DEPARTMENT
     elif "Sales" in current_dept:
@@ -403,31 +425,33 @@ else:
                 st.number_input("Estimated Order Value (₹)", 0.0)
                 st.form_submit_button("Save Lead")
         with tab3:
-            st.subheader("Monthly Order Growth & Conversion")
-            st.bar_chart(pd.DataFrame({"Order Value (Lakhs)": [42, 47, 51, 55]}))
+            st.subheader("🤝 Sales Department Month-Wise Report")
+            selected_month = st.selectbox("Select Month for Sales Report", months_list, index=9)
+            st.write(f"Order booking, enquiry conversion rate, and business growth for **{selected_month} 2026**.")
+            st.bar_chart(pd.DataFrame({"Order Value (Lakhs ₹)": [42, 47, 51, 55]}))
 
     # 13. PLANT HEAD PORTAL
     elif "Plant Head" in current_dept:
-        st.subheader("👔 Plant-Level Coordination & Monitoring")
-        st.write("Monitor overall Plant Production, Quality, Safety, and Maintenance coordination.")
+        st.subheader("👔 Plant Head Month-Wise Executive Report")
+        selected_month = st.selectbox("Select Month for Plant Report", months_list, index=9)
+        st.write(f"Comprehensive plant-level coordination, efficiency, and safety review for **{selected_month} 2026**.")
         st.dataframe(pd.DataFrame({
             "Department": ["Production", "Quality", "Maintenance", "Store", "Dispatch"],
-            "Status": ["Running Smoothly", "Target Met", "No Breakdowns", "Optimal Stock", "On Schedule"],
-            "Efficiency %": [95, 98, 96, 94, 98]
+            "Monthly Efficiency %": [95, 98, 96, 94, 98],
+            "Safety Incidents": [0, 0, 0, 0, 0]
         }), use_container_width=True)
-        st.subheader("Plant Performance Metrics")
         st.line_chart(pd.DataFrame({"Plant Efficiency %": [91, 93, 94, 95.5]}))
 
     # 14. COMPANY HEAD / MANAGEMENT
     elif "Company Head" in current_dept:
-        st.subheader("👑 Executive Business Strategy & Performance")
-        st.write("Strategic control over long-term growth, profitability, financial planning, and policy making.")
+        st.subheader("👑 Management Month-Wise Financial & Growth Report")
+        selected_month = st.selectbox("Select Month for Management Report", months_list, index=9)
+        st.write(f"Executive business performance, profitability, and revenue summary for **{selected_month} 2026**.")
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.metric("Annual Revenue", "₹ 48.5 Crores", "12% YoY")
+            st.metric("Monthly Revenue", "₹ 4.15 Crores", "12% YoY")
         with col2:
             st.metric("Net Profitability", "14.2%", "1.5% YoY")
         with col3:
             st.metric("Overall OEE", "78.5%", "2.1% ↑")
-        st.subheader("Company Growth & Investment Trend")
-        st.line_chart(pd.DataFrame({"Revenue (Crores)": [35, 39, 43, 48.5]}))
+        st.bar_chart(pd.DataFrame({"Revenue (Crores ₹)": [3.5, 3.8, 4.0, 4.15]}))
