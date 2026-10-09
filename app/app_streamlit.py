@@ -57,7 +57,7 @@ st.markdown("""
             </div>
             <div style="display: flex; gap: 15px;">
                 <div style="background: #334155; padding: 8px 15px; border-radius: 8px; font-size: 0.9rem;">
-                    📅 <strong>Date:</strong> 08 Oct 2026
+                    📅 <strong>Date:</strong> 09 Oct 2026
                 </div>
                 <div style="background: #065f46; padding: 8px 15px; border-radius: 8px; font-size: 0.9rem;">
                     🟢 <strong>Plant Status:</strong> Running
@@ -330,7 +330,7 @@ else:
             }), use_container_width=True)
             st.bar_chart(pd.DataFrame({"Dispatched Tonnage (MT)": [310, 330, 345, 360]}))
 
-    # 4. ACCOUNTS DEPARTMENT (Professional P2P, O2C, vouchers & BRS)
+    # 4. ACCOUNTS DEPARTMENT
     elif "Accounts" in current_dept:
         with tab1:
             st.subheader("📊 Ledger & Voucher Register (Purchase, Sales & Receipts)")
@@ -385,7 +385,7 @@ else:
             }), use_container_width=True)
             st.line_chart(pd.DataFrame({"Cost Variance %": [2.8, 2.5, 2.2, 2.0]}))
 
-    # 5. PURCHASE DEPARTMENT (Professional Procurement, PR, RFQ, CS, PO & Matching)
+    # 5. PURCHASE DEPARTMENT
     elif "Purchase" in current_dept:
         with tab1:
             st.subheader("🛒 Purchase Requisitions, Comparative Statements & PO Register")
@@ -441,42 +441,117 @@ else:
             }), use_container_width=True)
             st.line_chart(pd.DataFrame({"Supplier OTD %": [92, 93, 94, 95.2]}))
 
-    # 6. CORE DEPARTMENT
+    # 6. CORE DEPARTMENT (Updated with professional foundry working, sand mix, production & traceability)
     elif "Core" in current_dept:
         with tab1:
-            st.subheader("Core Sand Preparation & Curing Logs")
-            st.dataframe(pd.DataFrame({"Core Box ID": ["CB-12", "CB-14"], "Sand Mix": ["Furan", "CO2"], "Cores Produced": [450, 320], "Rejection %": [2.5, 1.8]}), use_container_width=True)
+            st.subheader("🛡️ Core Production Register & Batch Tracking")
+            st.dataframe(pd.DataFrame({
+                "Prod Plan No.": ["PLN-2026-081", "PLN-2026-082", "PLN-2026-083"],
+                "Part Name / No.": ["Housing Cover (TM-01)", "Hydraulic Body (KB-04)", "Bracket (BF-09)"],
+                "Core Box ID": ["CB-101", "CB-104", "CB-112"],
+                "Sand Batch No.": ["SB-2026-551", "SB-2026-552", "SB-2026-553"],
+                "Target Qty": [500, 350, 400],
+                "Actual Qty": [485, 350, 390],
+                "Rejection %": ["3.0%", "0.0%", "2.5%"],
+                "Status": ["Completed", "Completed", "Issued to Moulding"]
+            }), use_container_width=True)
+            st.info("💡 **Traceability Rule:** Core Batch No. is linked with Casting Batch No. to trace internal casting defects directly to the core department, sand mix, or machine setup.")
         with tab2:
-            st.subheader("Log Core Production")
-            with st.form("core_form"):
-                st.text_input("Core Box ID")
-                st.selectbox("Sand Type", ["Furan Sand", "CO2 Sand", "Shell Sand"])
-                st.number_input("Production Count", 0)
-                st.number_input("Rejection Count", 0)
-                st.form_submit_button("Save Core Entry")
+            st.subheader("Core Production, Sand Mix & Inspection Entry Form")
+            with st.form("core_doc_form"):
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.text_input("Production Plan No. & Part No.")
+                    st.text_input("Core Box ID & Machine ID")
+                    st.text_input("Sand Batch No. & Material Issue Slip No.")
+                    st.number_input("Resin % & Hardener %", 0.0, format="%.2f")
+                    st.text_input("Core Production Batch No.")
+                    st.number_input("Target Qty vs Actual Produced Qty", 0)
+                with col2:
+                    st.number_input("Accepted Qty & Rejected Qty", 0)
+                    st.text_input("Defect Code / Rejection Reason")
+                    st.text_input("Inspection Report No. (Dimensional & Hardness)")
+                    st.text_input("Core Issue Slip No. (To Moulding)")
+                    st.text_input("Operator Name & Shift")
+                    st.selectbox("Core Availability & Supply Status", ["Ready in Stock", "Issued to Moulding", "Under Inspection", "Rework Required"])
+                st.text_area("Curing Parameters, Mixing Time & Remarks")
+                st.form_submit_button("Save Core Production Record")
         with tab3:
-            st.subheader("🛡️ Core Department Month-Wise Report")
+            st.subheader("🛡️ Core Department Month-Wise Report & KPIs")
             selected_month = st.selectbox("Select Month for Core Report", months_list, index=9)
-            st.write(f"Core production count and rejection rate analysis for **{selected_month} 2026**.")
-            st.line_chart(pd.DataFrame({"Rejection %": [3.5, 3.1, 2.8, 2.4]}))
+            
+            col_c1, col_c2, col_c3, col_c4 = st.columns(4)
+            with col_c1:
+                st.metric("Core Productivity", "125 Pcs/Hr", "5% ↑")
+            with col_c2:
+                st.metric("Core Rejection Rate", "2.1%", "-0.8% vs last month")
+            with col_c3:
+                st.metric("Material Consumption", "Optimized", "Within limits")
+            with col_c4:
+                st.metric("On-Time Core Supply", "99.1%", "Excellent")
 
-    # 7. FETTLING DEPARTMENT
+            st.write(f"Comprehensive core room performance, sand mix recipe compliance, and rejection analysis for **{selected_month} 2026**.")
+            st.dataframe(pd.DataFrame({
+                "Core Activity / Report": ["Production Plan & Target Verification", "Sand Mix Recipe & Resin % Audit", "Core Box & Machine Setup Inspection", "Core Making & Curing Process Control", "Dimensional & Hardness Quality Inspection", "Core Storage & Issue to Moulding Dept", "Rejection & Defect Reason Analysis"],
+                f"{selected_month} Status": ["Achieved", "Compliant", "Verified", "Monitored", "Inspected", "Issued", "Analyzed"]
+            }), use_container_width=True)
+            st.line_chart(pd.DataFrame({"Core Rejection %": [3.5, 2.9, 2.4, 2.1]}))
+
+    # 7. FETTLING DEPARTMENT (Updated with professional foundry working, grinding, shot blasting & rework)
     elif "Fettling" in current_dept:
         with tab1:
-            st.subheader("Finishing, Grinding & Blasting Status")
-            st.dataframe(pd.DataFrame({"Casting Part": ["Housing", "Cover"], "Operation": ["Shot Blasting", "Grinding"], "OK Pcs": [120, 95], "Rejection Pcs": [2, 1]}), use_container_width=True)
+            st.subheader("⚙️ Fettling & Casting Finishing Register")
+            st.dataframe(pd.DataFrame({
+                "Casting Receipt No.": ["RPT-2026-301", "RPT-2026-302", "RPT-2026-303"],
+                "Part Name / No.": ["Housing Cover (TM-01)", "Hydraulic Body (KB-04)", "Bracket (BF-09)"],
+                "Production Batch": ["BATCH-881", "BATCH-882", "BATCH-883"],
+                "Received Qty": [450, 320, 380],
+                "Gate/Riser Removal": ["Completed", "Completed", "In Progress"],
+                "Shot Blasting Status": ["Done", "Done", "Pending"],
+                "Accepted Qty": [435, 312, 360],
+                "Status": ["Handed over to FG", "Handed over to FG", "Processing"]
+            }), use_container_width=True)
+            st.info("💡 **Traceability Rule:** Complete linkage from Casting Receipt Batch → Operation Card → Grinding/Shot Blasting → Final Inspection → Rework Tag / NCR → Handover Slip to FG Store.")
         with tab2:
-            st.subheader("Log Fettling Output")
-            with st.form("fettling_form"):
-                st.text_input("Casting Part Name")
-                st.selectbox("Process", ["Riser Cutting", "Shot Blasting", "Grinding", "Dressing"])
-                st.number_input("OK Pieces", 0)
-                st.form_submit_button("Save Fettling Record")
+            st.subheader("Casting Finishing, Grinding, Shot Blasting & Rework Entry Form")
+            with st.form("fettling_doc_form"):
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.text_input("Casting Receipt No. & Production Batch No.")
+                    st.text_input("Part Name, No. & Grade")
+                    st.number_input("Received Quantity from Shakeout", 0)
+                    st.text_input("Operation Card No. & Process Route")
+                    st.selectbox("Gate, Runner & Riser Removal Status", ["Completed Clean", "Rework Required", "Pending"])
+                    st.text_input("Grinding Machine ID & Operator Name")
+                with col2:
+                    st.number_input("Grinding Wheel Consumption (Pcs/Hrs)", 0.0)
+                    st.text_input("Shot Blasting Machine ID & Cycle Time")
+                    st.number_input("Accepted Finished Qty vs Rejected Qty", 0)
+                    st.text_input("Rework Tag No. / NCR No. (if defect found)")
+                    st.text_input("Inspection Report No. (Visual & Dimensional)")
+                    st.text_input("Handover Slip No. (To Machining / FG Store)")
+                st.text_area("Surface Defects, Excess Metal Notes & Remarks")
+                st.form_submit_button("Save Fettling & Finishing Record")
         with tab3:
-            st.subheader("⚙️ Fettling Department Month-Wise Report")
+            st.subheader("⚙️ Fettling Department Month-Wise Report & KPIs")
             selected_month = st.selectbox("Select Month for Fettling Report", months_list, index=9)
-            st.write(f"Finishing productivity and dressing output for **{selected_month} 2026**.")
-            st.line_chart(pd.DataFrame({"Output Pcs/Day": [210, 220, 235, 245]}))
+            
+            col_f1, col_f2, col_f3, col_f4 = st.columns(4)
+            with col_f1:
+                st.metric("Finishing Productivity", "94.5%", "3% ↑")
+            with col_f2:
+                st.metric("Fettling Rejection %", "1.5%", "Low")
+            with col_f3:
+                st.metric("Rework Rate", "3.2%", "Controlled")
+            with col_f4:
+                st.metric("Grinding Wheel Life", "Optimal", "Cost Efficient")
+
+            st.write(f"Comprehensive casting finishing, grinding, shot blasting, and scrap reduction summary for **{selected_month} 2026**.")
+            st.dataframe(pd.DataFrame({
+                "Fettling Activity / Report": ["Casting Receipt & Batch Verification", "Gate, Runner & Riser Removal Operation", "Grinding & Surface Dressing Quality", "Shot Blasting & Media Cleanliness Audit", "Visual & Dimensional Surface Inspection", "Rework Tag & NCR Defect Control", "Handover Slip & Transfer to FG Store"],
+                f"{selected_month} Status": ["Verified", "Completed", "Inspected", "Audited", "Approved", "Tracked", "Transferred"]
+            }), use_container_width=True)
+            st.line_chart(pd.DataFrame({"Fettling Output (MT/Day)": [22, 24, 25, 26.5]}))
 
     # 8. QUALITY DEPARTMENT
     elif "Quality" in current_dept:
