@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS for Clean Professional White & Dark Blue Theme (Fixed Input Labels & Text Visibility)
+# Custom CSS for Clean Professional White & Dark Blue Theme (Fixed Button Visibility)
 st.markdown("""
     <style>
     /* Global Background - Pure White */
@@ -47,9 +47,9 @@ st.markdown("""
         border: 1px solid #e2e8f0;
         border-top: 4px solid #1e40af;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
-        margin-bottom: 12px;
+        margin-bottom: 8px;
         color: #1e293b;
-        min-height: 250px;
+        min-height: 240px;
     }
     .card-title {
         font-size: 1rem;
@@ -58,14 +58,16 @@ st.markdown("""
         color: #1e40af;
     }
     
-    /* Dark Blue Action Buttons */
+    /* Dark Blue Action Buttons - Fully Visible & Clean */
     .stButton>button {
         background-color: #1e40af !important;
         color: white !important;
         border-radius: 6px !important;
         font-weight: 600 !important;
         border: none !important;
-        padding: 6px 12px !important;
+        padding: 8px 14px !important;
+        margin-bottom: 15px !important;
+        width: 100% !important;
     }
     .stButton>button:hover {
         background-color: #1e3a8a !important;
