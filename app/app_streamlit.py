@@ -8,16 +8,16 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS for Exact Match Professional Design (White, Faint Blue, Dark Blue, Red Alerts)
+# Custom CSS for Professional Pure White, Faint Blue & Dark Blue Theme
 st.markdown("""
     <style>
-    /* Global Background - Pure Clean White */
+    /* Global Background - Pure White */
     .stApp {
         background-color: #ffffff;
         color: #1e293b;
     }
     
-    /* Top Enterprise Header - Rich Dark Blue */
+    /* Top Enterprise Header - Dark Blue */
     .main-header {
         background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
         padding: 20px 24px;
@@ -25,19 +25,6 @@ st.markdown("""
         color: white;
         margin-bottom: 16px;
         box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15);
-    }
-    
-    /* Process Flow Bar - Light Faint Blue */
-    .flow-bar {
-        background-color: #f0f6ff;
-        border: 1px solid #bfdbfe;
-        padding: 8px 12px;
-        border-radius: 8px;
-        text-align: center;
-        font-weight: 600;
-        color: #1e40af;
-        font-size: 0.82rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     }
     
     /* Department Cards - Clean White with Dark Blue Accent Top */
@@ -118,7 +105,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Top Header Section (Matching Provided Design)
+# Top Header Section
 st.markdown("""
     <div class="main-header">
         <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -143,16 +130,6 @@ st.markdown("""
         </div>
     </div>
 """, unsafe_allow_html=True)
-
-# End-to-End Process Flow Bar
-st.markdown("#### 📈 Foundry End-to-End Process Flow")
-flow_cols = st.columns(9)
-flows = ["Sales", "Development", "Purchase", "Store", "Production", "Core", "Fettling", "Quality / Lab", "Dispatch"]
-for i, col in enumerate(flow_cols):
-    with col:
-        st.markdown(f'<div class="flow-bar">{flows[i]}</div>', unsafe_allow_html=True)
-
-st.markdown("<br>", unsafe_allow_html=True)
 
 # Initialize Session State for Navigation
 if 'selected_dept' not in st.session_state:
@@ -183,7 +160,7 @@ if current_selection not in view_options:
     
 currentIndex = view_options.index(current_selection)
 
-# Sidebar Navigation (Matching exact icons & structure from image)
+# Sidebar Navigation
 st.sidebar.markdown("### 🎛️ Navigation Menu")
 selected_view = st.sidebar.selectbox("Select Module", view_options, index=currentIndex)
 
@@ -194,15 +171,20 @@ if selected_view != st.session_state.selected_dept:
 if st.session_state.selected_dept == "Dashboard":
     
     departments = [
-        {"name": "📦 Store Department", "access": "Create/Edit Stock Entries, View PO & GRN", "auth": "Physical verification before receipt/issue", "kpi": "Inventory Accuracy 98%"},
-        {"name": "🔧 Maintenance Department", "access": "Create/Edit PM & Breakdown Logs", "auth": "Authorized maintenance & safe restart confirmation", "kpi": "Machine Availability 95%"},
-        {"name": "🚚 Dispatch Department", "access": "Create DC, Packing List, View Sales Order", "auth": "Dispatch after quality clearance & authorized documents", "kpi": "On-Time Delivery 98%"},
-        {"name": "📊 Accounts Department", "access": "View PO, GRN, SO, Invoices, Ledgers", "auth": "Payment/billing approval workflow", "kpi": "Financial Accuracy 99%"},
-        {"name": "🛒 Purchase Department", "access": "Create PR/PO, View Store Stock", "auth": "PO approval as per delegation", "kpi": "Supplier OTD 95%"},
-        {"name": "🛡️ Core Department", "access": "Create Core Output, View Production Plan", "auth": "Approved recipe before core closure", "kpi": "Core Rejection < 3%"},
-        {"name": "⚙️ Fettling Department", "access": "Create Output/Rework, View Job Card", "auth": "Operation completion & quality handover", "kpi": "Rework Rate < 4%"},
-        {"name": "🔬 Quality Department", "access": "Create Inspection/NCR, Hold/Release", "auth": "Independent quality hold/release", "kpi": "First Pass Yield 97%"},
-        {"name": "🏭 Production Department", "access": "Create Plan/Output, View Lab/Quality", "auth": "Production completion & quality handover", "kpi": "Plan Achievement 95%"}
+        {"name": "📦 Store", "access": "Create/Edit Stock Entries, View PO & GRN", "auth": "Physical verification before receipt/issue", "kpi": "Inventory Accuracy 98%"},
+        {"name": "🔧 Maintenance", "access": "Create/Edit PM & Breakdown Logs", "auth": "Authorized maintenance & safe restart confirmation", "kpi": "Machine Availability 95%"},
+        {"name": "🚚 Dispatch", "access": "Create DC, Packing List, View Sales Order", "auth": "Dispatch after quality clearance & authorized documents", "kpi": "On-Time Delivery 98%"},
+        {"name": "📊 Accounts", "access": "View PO, GRN, SO, Invoices, Ledgers", "auth": "Payment/billing approval workflow", "kpi": "Financial Accuracy 99%"},
+        {"name": "🛒 Purchase", "access": "Create PR/PO, View Store Stock", "auth": "PO approval as per delegation", "kpi": "Supplier OTD 95%"},
+        {"name": "🛡️ Core", "access": "Create Core Output, View Production Plan", "auth": "Approved recipe before core closure", "kpi": "Core Rejection < 3%"},
+        {"name": "⚙️ Fettling", "access": "Create Output/Rework, View Job Card", "auth": "Operation completion & quality handover", "kpi": "Rework Rate < 4%"},
+        {"name": "🔬 Quality", "access": "Create Inspection/NCR, Hold/Release", "auth": "Independent quality hold/release", "kpi": "First Pass Yield 97%"},
+        {"name": "🏭 Production", "access": "Create Plan/Output, View Lab/Quality", "auth": "Production completion & quality handover", "kpi": "Plan Achievement 95%"},
+        {"name": "💡 Development", "access": "Create Feasibility/Trials, View Reports", "auth": "Engineering change sathi designated approval.", "kpi": "First Trial Success: 88%"},
+        {"name": "🧪 Lab", "access": "Create Test Results, View Heat/Specs", "auth": "Test report jari karne; commercial approval nahi.", "kpi": "Testing Accuracy: 99.5%"},
+        {"name": "🤝 Sales", "access": "Create Quotations/SOs, View Dispatch/Accounts", "auth": "Delegated limit madhe quotation / order coordination.", "kpi": "Order Booking: ₹ 4.5 Cr"},
+        {"name": "👔 Plant Head", "access": "View All Plant Reports & Department Records", "auth": "Delegated operational approvals & escalation.", "kpi": "Plant OEE: 78.5%"},
+        {"name": "👑 Company Head", "access": "View All Consolidated Financials & KPIs", "auth": "Company policy, budget & major investments.", "kpi": "Monthly Revenue: ₹ 4.15 Cr"}
     ]
 
     for i in range(0, len(departments), 3):
@@ -223,9 +205,9 @@ if st.session_state.selected_dept == "Dashboard":
                         </div>
                     """, unsafe_allow_html=True)
                     
-                    clean_name = dept['name'].split(' ', 1)[1]
+                    clean_name = dept['name'].split(' ', 1)[1].strip()
                     if st.button(f"Manage {clean_name}", key=f"btn_{i+j}", use_container_width=True):
-                        st.session_state.selected_dept = clean_name.replace(" Department", "").strip()
+                        st.session_state.selected_dept = clean_name
                         st.rerun()
 
     st.markdown("---")
@@ -252,7 +234,7 @@ elif st.session_state.selected_dept == "🔐 Access & Authority Matrix":
 
 else:
     current_dept = st.session_state.selected_dept
-    st.title(f"🛠️ {current_dept} Department Management Portal")
+    st.title(f"🛠️ {current_dept} Management Portal")
     st.markdown(f'<div class="alert-box">⚠️ Active Module: {current_dept} | Strict Compliance & Quality Control Mode Active.</div>', unsafe_allow_html=True)
     
     if st.button("⬅️ Back to Dashboard"):
