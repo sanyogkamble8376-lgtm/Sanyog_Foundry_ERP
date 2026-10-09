@@ -8,16 +8,16 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS for Professional Pure White & Dark Blue Enterprise Styling (No Scroll, Dark Blue Buttons)
+# Custom CSS for Strict 4-Color Palette: White, Faint Blue, Dark Blue, Red (Alerts/Errors)
 st.markdown("""
     <style>
-    /* Global App Background - Pure White */
+    /* Global Background - Pure White */
     .stApp {
         background-color: #ffffff;
         color: #1e293b;
     }
     
-    /* Top Enterprise Header */
+    /* Top Enterprise Header - Dark Blue */
     .main-header {
         background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
         padding: 16px 20px;
@@ -27,7 +27,7 @@ st.markdown("""
         box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
     
-    /* End-to-End Process Flow Bar */
+    /* Process Flow Bar - Faint Blue */
     .flow-bar {
         background-color: #eff6ff;
         border: 1px solid #bfdbfe;
@@ -39,7 +39,7 @@ st.markdown("""
         font-size: 0.8rem;
     }
     
-    /* Professional Department Cards (Pure White with Dark Blue Accent) */
+    /* Department Cards - White with Dark Blue Top Border */
     .dept-card {
         background-color: #ffffff;
         border-radius: 8px;
@@ -58,7 +58,7 @@ st.markdown("""
         color: #1e40af;
     }
     
-    /* Dark Blue Buttons Styling */
+    /* Dark Blue Action Buttons */
     .stButton>button {
         background-color: #1e40af !important;
         color: white !important;
@@ -72,13 +72,25 @@ st.markdown("""
         color: white !important;
     }
     
+    /* Red Accent Alert Styling */
+    .alert-box {
+        background-color: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #dc2626;
+        padding: 10px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    
     /* Sidebar Styling - Faint Blue Tint */
     section[data-testid="stSidebar"] {
         background-color: #f8fafc;
         border-right: 1px solid #e2e8f0;
     }
     
-    /* Compact Spacing to Prevent Unwanted Scrolling */
+    /* Compact Spacing to Prevent Scrolling */
     .block-container {
         padding-top: 1.5rem !important;
         padding-bottom: 1rem !important;
@@ -98,7 +110,7 @@ st.markdown("""
                 <div style="background: rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 6px; font-size: 0.8rem;">
                     📅 <strong>Date:</strong> 09 Oct 2026
                 </div>
-                <div style="background: #059669; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; color: white;">
+                <div style="background: #1e40af; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; color: white; border: 1px solid #bfdbfe;">
                     🟢 <strong>Plant Status:</strong> Running
                 </div>
                 <div style="background: rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 6px; font-size: 0.8rem;">
@@ -123,7 +135,6 @@ st.markdown("<br>", unsafe_allow_html=True)
 if 'selected_dept' not in st.session_state:
     st.session_state.selected_dept = "Operations Master Dashboard"
 
-# Sidebar Navigation Options (All 14 Modules + Access Matrix)
 view_options = [
     "Operations Master Dashboard", 
     "🔐 Access & Authority Matrix",
@@ -149,7 +160,7 @@ if current_selection not in view_options:
     
 currentIndex = view_options.index(current_selection)
 
-# Sidebar Navigation (Instant Response Selectbox with Blue Theme Styling)
+# Sidebar Navigation
 st.sidebar.markdown("### 🎛️ Navigation & Control")
 selected_view = st.sidebar.selectbox("Select View / Department", view_options, index=currentIndex)
 
@@ -176,7 +187,6 @@ if st.session_state.selected_dept == "Operations Master Dashboard":
         {"name": "👑 Company Head / Management", "access": "View All Consolidated Financials & KPIs", "auth": "Company policy, budget & major investments.", "kpi": "Monthly Revenue: ₹ 4.15 Cr"}
     ]
 
-    # Grid Display (3 columns per row)
     for i in range(0, len(departments), 3):
         cols = st.columns(3)
         for j in range(3):
@@ -200,17 +210,12 @@ if st.session_state.selected_dept == "Operations Master Dashboard":
                         st.session_state.selected_dept = dept['name']
                         st.rerun()
 
-    # Bottom Summary Bar
     st.markdown("---")
     b_cols = st.columns(4)
-    with b_cols[0]:
-        st.metric(label="Total Production (MT)", value="1,250 MT", delta="8% vs last month")
-    with b_cols[1]:
-        st.metric(label="Rejection Rate", value="1.8%", delta="-0.5% vs last month")
-    with b_cols[2]:
-        st.metric(label="On-Time Delivery", value="98%", delta="3% vs last month")
-    with b_cols[3]:
-        st.metric(label="Monthly Revenue", value="₹ 4.15 Cr", delta="12% YoY")
+    with b_cols[0]: st.metric(label="Total Production (MT)", value="1,250 MT", delta="8% vs last month")
+    with b_cols[1]: st.metric(label="Rejection Rate", value="1.8%", delta="-0.5% vs last month")
+    with b_cols[2]: st.metric(label="On-Time Delivery", value="98%", delta="3% vs last month")
+    with b_cols[3]: st.metric(label="Monthly Revenue", value="₹ 4.15 Cr", delta="12% YoY")
 
 elif st.session_state.selected_dept == "🔐 Access & Authority Matrix":
     st.title("🔐 Department-wise Access Rights & Approval Authority Matrix")
@@ -230,7 +235,7 @@ elif st.session_state.selected_dept == "🔐 Access & Authority Matrix":
 else:
     current_dept = st.session_state.selected_dept
     st.title(f"🛠️ {current_dept} Management Portal")
-    st.write(f"Complete operational workspace and specialized records for **{current_dept}**.")
+    st.markdown(f'<div class="alert-box">⚠️ Active Module: {current_dept} | Strict Compliance & Quality Control Mode Active.</div>', unsafe_allow_html=True)
     
     if st.button("⬅️ Back to Operations Master Dashboard"):
         st.session_state.selected_dept = "Operations Master Dashboard"
@@ -239,21 +244,36 @@ else:
     tab1, tab2, tab3 = st.tabs(["Active Records & Tracking", "Add New Entry / Form", "Month-Wise Reports & KPIs"])
     months_list = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
-    # Generic department display template to ensure fast loading and zero lag
     with tab1:
         st.subheader(f"📋 {current_dept} - Active Records & Register")
         st.dataframe(pd.DataFrame({
-            "Record ID": [f"REC-2026-01", f"REC-2026-02"],
-            "Description": ["Primary Operation Tracking", "Secondary Process Log"],
-            "Status": ["Active / Running", "Completed"]
+            "Transaction ID": ["TXN-2026-101", "TXN-2026-102", "TXN-2026-103"],
+            "Description": [f"Standard Operation Log for {current_dept}", "Material & Process Verification", "Quality / Dispatch Clearance"],
+            "Status": ["Active / Running", "Completed", "Verified"]
         }), use_container_width=True)
+
     with tab2:
-        st.subheader(f"✍️ {current_dept} - New Entry Form")
+        st.subheader(f"✍️ {current_dept} - New Entry & Transaction Form")
         with st.form(f"{current_dept}_form"):
-            st.text_input("Reference No. / Batch No.")
-            st.text_input("Details / Remarks")
-            st.form_submit_button("Save Record")
+            col1, col2 = st.columns(2)
+            with col1:
+                st.text_input("Reference No. / Batch No.")
+                st.text_input("Item / Component Name")
+            with col2:
+                st.number_input("Quantity / Value", 0.0)
+                st.selectbox("Status", ["Draft", "Pending Approval", "Approved & Completed"])
+            st.text_area("Remarks & Operational Notes")
+            st.form_submit_button(f"Save {current_dept} Record")
+
     with tab3:
         st.subheader(f"📊 {current_dept} - Month-Wise Report & KPIs")
-        sel_m = st.selectbox("Select Month", months_list, index=9)
-        st.metric("Performance Index", "98.5%", "Optimal")
+        sel_m = st.selectbox("Select Month for Report", months_list, index=9)
+        col_m1, col_m2 = st.columns(2)
+        with col_m1:
+            st.metric("Efficiency / Accuracy", "98.5%", "1.2% ↑")
+        with col_m2:
+            st.metric("Status Summary", "Optimal", "On Track")
+        st.dataframe(pd.DataFrame({
+            "Metric Name": ["Total Transactions", "Approved Records", "Pending Actions", "Audit Status"],
+            f"{sel_m} 2026 Data": ["120 Entries", "115 Completed", "5 In Progress", "Verified"]
+        }), use_container_width=True)
