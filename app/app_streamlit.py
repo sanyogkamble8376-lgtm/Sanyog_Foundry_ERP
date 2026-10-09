@@ -223,28 +223,56 @@ else:
             }), use_container_width=True)
             st.line_chart(pd.DataFrame({"Inventory Accuracy %": [97, 97.5, 98, 98.5, 99]}))
 
-    # 2. MAINTENANCE DEPARTMENT
+    # 2. MAINTENANCE DEPARTMENT (Updated with professional foundry working & KPIs)
     elif "Maintenance" in current_dept:
         with tab1:
-            st.subheader("Equipment Maintenance & Downtime Control")
-            st.dataframe(pd.DataFrame({"Equipment": ["Induction Furnace", "Core Shooter", "Compressor"], "Type": ["Breakdown", "Preventive", "Routine"], "Downtime (Hrs)": [2.5, 1.0, 0.5], "Status": ["Resolved", "Completed", "Scheduled"]}), use_container_width=True)
-        with tab2:
-            st.subheader("Log Maintenance Activity")
-            with st.form("maint_form"):
-                st.selectbox("Equipment / Machine", ["Furnace", "Moulding Line", "Compressor", "Pump", "Electrical System"])
-                st.text_input("Fault / Maintenance Description")
-                st.number_input("Downtime Hours", 0.0)
-                st.form_submit_button("Submit Maintenance Log")
-        with tab3:
-            st.subheader("🔧 Maintenance Department Month-Wise Report")
-            selected_month = st.selectbox("Select Month for Maintenance Report", months_list, index=9)
-            st.write(f"Equipment availability, MTTR, and breakdown hours for **{selected_month} 2026**.")
+            st.subheader("🔧 Machine Asset Register & Breakdown History")
             st.dataframe(pd.DataFrame({
-                "Equipment": ["Furnace 1", "Furnace 2", "Core Shooter", "Moulding Line"],
-                "Total Breakdown Hours": [4.5, 2.0, 3.0, 5.5],
-                "Availability %": ["95.2%", "97.8%", "96.5%", "94.0%"]
+                "Asset ID": ["AST-F01", "AST-CS02", "AST-SB03", "AST-CMP04"],
+                "Machine Name": ["Induction Furnace 1", "Core Shooter", "Shot Blasting Machine", "Air Compressor"],
+                "Department": ["Furnace Dept", "Core Shop", "Fettling", "Utilities"],
+                "Criticality": ["High", "Medium", "High", "Critical"],
+                "Status": ["Running", "Under Maintenance", "Running", "Running"]
             }), use_container_width=True)
-            st.line_chart(pd.DataFrame({"Availability %": [93, 94, 95, 95.5]}))
+            st.info("💡 **Best Practice:** Each breakdown is linked with Machine ID + Breakdown No. + WO No. + Root Cause + Downtime + Action Taken for effective analysis.")
+        with tab2:
+            st.subheader("Maintenance Work Order & Breakdown Entry Form")
+            with st.form("maint_doc_form"):
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.text_input("Asset ID / Machine ID")
+                    st.text_input("Breakdown No. / Complaint No.")
+                    st.text_input("WO No. - Work Order No.")
+                    st.text_input("PM Schedule No. / PM Checklist No.")
+                    st.selectbox("Maintenance Type", ["Preventive Maintenance", "Breakdown Maintenance", "Condition Monitoring", "Utility Service"])
+                with col2:
+                    st.text_input("Spare Requisition No. / Item Code")
+                    st.text_input("Assigned Technician Name")
+                    st.number_input("Downtime Hours", 0.0)
+                    st.text_input("Root Cause (RCA)")
+                    st.text_input("Action Taken & Restart Time")
+                st.text_area("Fault Description & Work Description Remarks")
+                st.form_submit_button("Save Maintenance & WO Record")
+        with tab3:
+            st.subheader("🔧 Maintenance Department Month-Wise Report & KPIs")
+            selected_month = st.selectbox("Select Month for Maintenance Report", months_list, index=9)
+            
+            col_m1, col_m2, col_m3, col_m4 = st.columns(4)
+            with col_m1:
+                st.metric("Machine Availability", "95.5%", "1.2% vs last month")
+            with col_m2:
+                st.metric("PM Compliance", "98.0%", "2.5% ↑")
+            with col_m3:
+                st.metric("MTTR (Mean Time to Repair)", "3.2 Hrs", "-0.5 hrs")
+            with col_m4:
+                st.metric("MTBF (Mean Time Between Failures)", "164 Hrs", "12 hrs ↑")
+
+            st.write(f"Detailed maintenance performance summary for **{selected_month} 2026**.")
+            st.dataframe(pd.DataFrame({
+                "Report Type": ["Daily Breakdown Report", "PM Due / Completed Report", "Machine Downtime Report", "Pending Work Orders", "Spare Parts Consumption", "Critical Spare Stock Report", "Monthly Maintenance Cost"],
+                f"{selected_month} Status": ["Verified", "100% Completed", "Total 18.5 Hrs", "2 Open WOs", "₹ 2.4 Lakhs", "Optimal", "₹ 4.8 Lakhs"]
+            }), use_container_width=True)
+            st.line_chart(pd.DataFrame({"Machine Availability %": [93, 94, 95, 95.5]}))
 
     # 3. DISPATCH DEPARTMENT
     elif "Dispatch" in current_dept:
