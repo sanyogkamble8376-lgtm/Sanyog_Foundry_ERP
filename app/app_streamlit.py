@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
 
 # Page Configuration
 st.set_page_config(
@@ -86,7 +85,6 @@ view_options = [
     "🤝 Sales Department"
 ]
 
-# Ensure current state exists in options, default to 0 if not found
 current_selection = st.session_state.selected_dept
 if current_selection not in view_options:
     current_selection = "Operations Master Dashboard"
@@ -153,7 +151,7 @@ else:
         st.session_state.selected_dept = "Operations Master Dashboard"
         st.rerun()
         
-    # Department specific placeholder tabs/forms
+    # Department specific tabs/forms
     tab1, tab2, tab3 = st.tabs(["Active Records", "Add New Entry", "Reports"])
     with tab1:
         st.subheader("Recent Entries")
@@ -171,4 +169,5 @@ else:
             st.form_submit_button("Save Record")
     with tab3:
         st.subheader("Department Reports & Analytics")
-        st.line_chart([10, 20, 15, 30, 45, 40]).
+        chart_df = pd.DataFrame({"Performance": [10, 20, 15, 30, 45, 40]})
+        st.line_chart(chart_df)
